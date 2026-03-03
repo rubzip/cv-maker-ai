@@ -1,0 +1,5 @@
+pytest
+pydantic
+PyYAML
+fastapi
+jinja2
