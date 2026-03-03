@@ -4,6 +4,7 @@ import { useCvStore } from "../../store/useCvStore"
 import { Input } from "../ui/Input"
 import { Button } from "../ui/Button"
 import { Card } from "../ui/Card"
+import { DatePicker } from "../ui/DatePicker"
 import type { Experience } from "../../types/cv"
 
 interface SectionFormProps {
@@ -23,17 +24,6 @@ export function SectionForm({ index }: SectionFormProps) {
         updateExperience(index, expIndex, { [field]: value })
     }
 
-    const handleDateChange = (expIndex: number, field: 'start_date' | 'end_date', subfield: 'month' | 'year', value: string) => {
-        const currentExp = section.content[expIndex]
-        const currentDate = currentExp.interval?.[field] ?? { month: 1, year: new Date().getFullYear() }
-
-        updateExperience(index, expIndex, {
-            interval: {
-                ...(currentExp.interval ?? { start_date: null, end_date: null }),
-                [field]: { ...currentDate, [subfield]: parseInt(value) || 0 }
-            }
-        })
-    }
 
     return (
         <Card className="overflow-hidden border-border transition-colors">
@@ -42,7 +32,7 @@ export function SectionForm({ index }: SectionFormProps) {
                     value={section.title}
                     onChange={handleTitleChange}
                     placeholder="Section Title (e.g. Experience)"
-                    className="max-w-[300px] font-medium border-transparent bg-transparent focus-visible:ring-0 px-0 h-7"
+                    className="max-w-[400px] font-bold text-lg border-none bg-transparent focus-visible:ring-0 px-0 h-auto placeholder:opacity-50 hover:placeholder:opacity-100 transition-all shadow-none"
                 />
                 <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" onClick={() => setIsExpanded(!isExpanded)}>
@@ -100,37 +90,23 @@ export function SectionForm({ index }: SectionFormProps) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Start Date</label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            type="number"
-                                            placeholder="MM"
-                                            value={exp.interval?.start_date?.month ?? ""}
-                                            onChange={(e) => handleDateChange(expIndex, 'start_date', 'month', e.target.value)}
-                                        />
-                                        <Input
-                                            type="number"
-                                            placeholder="YYYY"
-                                            value={exp.interval?.start_date?.year ?? ""}
-                                            onChange={(e) => handleDateChange(expIndex, 'start_date', 'year', e.target.value)}
-                                        />
-                                    </div>
+                                    <DatePicker
+                                        value={exp.interval?.start_date ?? null}
+                                        onChange={(date) => handleExperienceChange(expIndex, 'interval', {
+                                            ...(exp.interval ?? { start_date: null, end_date: null }),
+                                            start_date: date
+                                        })}
+                                    />
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Date (Leave empty for Present)</label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            type="number"
-                                            placeholder="MM"
-                                            value={exp.interval?.end_date?.month ?? ""}
-                                            onChange={(e) => handleDateChange(expIndex, 'end_date', 'month', e.target.value)}
-                                        />
-                                        <Input
-                                            type="number"
-                                            placeholder="YYYY"
-                                            value={exp.interval?.end_date?.year ?? ""}
-                                            onChange={(e) => handleDateChange(expIndex, 'end_date', 'year', e.target.value)}
-                                        />
-                                    </div>
+                                    <DatePicker
+                                        value={exp.interval?.end_date ?? null}
+                                        onChange={(date) => handleExperienceChange(expIndex, 'interval', {
+                                            ...(exp.interval ?? { start_date: null, end_date: null }),
+                                            end_date: date
+                                        })}
+                                    />
                                 </div>
                             </div>
 
