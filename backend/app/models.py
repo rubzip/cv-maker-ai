@@ -3,17 +3,21 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class Date(BaseModel):
-    month: int = Field(..., ge=1, le=12, examples=[1])
+    month: Optional[int] = Field(None, ge=1, le=12, examples=[1])
     year: int = Field(..., examples=[2021])
 
-    def __gt__(self, other: "Date") -> bool:
-        return (self.year, self.month) > (other.year, other.month)
+    def __ge__(self, other: "Date") -> bool:
+        if self.month is None or other.month is None:
+            return self.year >= other.year
+        return (self.year, self.month) >= (other.year, other.month)
 
     def to_str(self, mode: Literal["numeric", "short", "long"] = "numeric") -> str:
         MONTHS = (
             "", "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December",
         )
+        if self.month is None:
+            return str(self.year)
         if mode == "short":
             return f"{MONTHS[self.month][:3]} {self.year}"
         if mode == "long":
@@ -33,7 +37,7 @@ class Interval(BaseModel):
             return self
         if self.start_date is None:
             raise ValueError("Start date is required if end date is given")
-        if self.start_date > self.end_date:
+        if self.start_date >= self.end_date:
             raise ValueError("Start date must be before end date")
         return self
 
