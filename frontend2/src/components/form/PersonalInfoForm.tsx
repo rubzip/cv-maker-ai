@@ -19,7 +19,9 @@ export function PersonalInfoForm() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">Full Name</label>
+                    <label className="text-xs font-medium text-neutral-500">
+                        Full Name <span className="text-destructive">*</span>
+                    </label>
                     <Input
                         name="name"
                         value={personal_info.name}
@@ -28,7 +30,9 @@ export function PersonalInfoForm() {
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">Email Address</label>
+                    <label className="text-xs font-medium text-neutral-500">
+                        Email Address <span className="text-destructive">*</span>
+                    </label>
                     <Input
                         name="email"
                         type="email"

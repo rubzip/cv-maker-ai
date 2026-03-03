@@ -36,8 +36,8 @@ export function SectionForm({ index }: SectionFormProps) {
     }
 
     return (
-        <Card className="overflow-hidden border-neutral-200 dark:border-neutral-800">
-            <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900/50 border-b border-neutral-200 dark:border-neutral-800">
+        <Card className="overflow-hidden border-border transition-colors">
+            <div className="flex items-center justify-between p-4 bg-muted/30 border-b border-border">
                 <Input
                     value={section.title}
                     onChange={handleTitleChange}
@@ -60,7 +60,9 @@ export function SectionForm({ index }: SectionFormProps) {
                         <div key={expIndex} className="space-y-4 pt-4 first:pt-0 border-t first:border-0 border-neutral-100 dark:border-neutral-800">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Role / Position</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Role / Position <span className="text-destructive">*</span>
+                                    </label>
                                     <Input
                                         value={exp.name}
                                         onChange={(e) => handleExperienceChange(expIndex, 'name', e.target.value)}
@@ -68,7 +70,9 @@ export function SectionForm({ index }: SectionFormProps) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Institution / Company</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Institution / Company <span className="text-destructive">*</span>
+                                    </label>
                                     <Input
                                         value={exp.institution ?? ""}
                                         onChange={(e) => handleExperienceChange(expIndex, 'institution', e.target.value)}
@@ -76,7 +80,7 @@ export function SectionForm({ index }: SectionFormProps) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Location</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Location</label>
                                     <Input
                                         value={exp.location ?? ""}
                                         onChange={(e) => handleExperienceChange(expIndex, 'location', e.target.value)}
@@ -84,7 +88,7 @@ export function SectionForm({ index }: SectionFormProps) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">URL</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">URL</label>
                                     <Input
                                         value={exp.url ?? ""}
                                         onChange={(e) => handleExperienceChange(expIndex, 'url', e.target.value)}
@@ -95,7 +99,7 @@ export function SectionForm({ index }: SectionFormProps) {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Start Date</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Start Date</label>
                                     <div className="flex gap-2">
                                         <Input
                                             type="number"
@@ -112,7 +116,7 @@ export function SectionForm({ index }: SectionFormProps) {
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">End Date (Leave empty for Present)</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Date (Leave empty for Present)</label>
                                     <div className="flex gap-2">
                                         <Input
                                             type="number"
@@ -131,7 +135,7 @@ export function SectionForm({ index }: SectionFormProps) {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Description (Bullet Points)</label>
+                                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Description (Bullet Points)</label>
                                 <textarea
                                     value={exp.description.join('\n')}
                                     onChange={(e) => handleExperienceChange(expIndex, 'description', e.target.value.split('\n'))}

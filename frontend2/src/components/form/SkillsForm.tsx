@@ -11,7 +11,7 @@ export function SkillsForm() {
     return (
         <Card className="p-6 space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-sm font-medium text-neutral-500 uppercase tracking-wider">
+                <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Skills
                 </h2>
                 <Button variant="outline" size="sm" onClick={addSkillGroup}>
@@ -25,7 +25,9 @@ export function SkillsForm() {
                         <div className="flex gap-4 items-start">
                             <div className="flex-1 space-y-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Skill Group Title</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Skill Group Title <span className="text-destructive">*</span>
+                                    </label>
                                     <Input
                                         value={group.skill_group}
                                         onChange={(e) => updateSkillGroup(index, { skill_group: e.target.value })}
@@ -33,7 +35,9 @@ export function SkillsForm() {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Skills (Comma separated)</label>
+                                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Skills (Comma separated) <span className="text-destructive">*</span>
+                                    </label>
                                     <Input
                                         value={group.skills.join(", ")}
                                         onChange={(e) => updateSkillGroup(index, { skills: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}

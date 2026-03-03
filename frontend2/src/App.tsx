@@ -6,13 +6,13 @@ import { Download, Share2, Sparkles } from "lucide-react"
 
 function App() {
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 font-sans selection:bg-neutral-200 dark:selection:bg-neutral-800">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-neutral-200 dark:selection:bg-neutral-800">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-md">
         <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-neutral-900 dark:bg-white rounded flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white dark:text-neutral-900" />
+            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center transition-colors">
+              <Sparkles className="w-5 h-5 text-primary-foreground" />
             </div>
             <span className="font-bold tracking-tight text-lg">CV Maker AI</span>
           </div>
@@ -34,17 +34,20 @@ function App() {
         {/* Form Container */}
         <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-160px)] pr-4 scrollbar-thin">
           <div className="space-y-1 mb-8">
-            <h1 className="text-2xl font-bold tracking-tight">Builder</h1>
-            <p className="text-sm text-neutral-500">Fill in your professional details to build your precision CV.</p>
+            <h1 className="text-2xl font-bold tracking-tight">Precision Builder</h1>
+            <p className="text-sm text-muted-foreground">Fill in your professional details to generate your precision-designed CV.</p>
           </div>
           <CvForm />
         </div>
 
         {/* Preview Container */}
-        <div className="hidden lg:block bg-neutral-100 dark:bg-neutral-900/50 rounded-xl border border-neutral-200 dark:border-neutral-800 p-8 overflow-y-auto max-h-[calc(100vh-160px)] shadow-inner">
-          <div className="mb-4 flex items-center justify-between text-xs font-medium text-neutral-500 uppercase tracking-widest">
+        <div className="hidden lg:block bg-muted/40 dark:bg-black/20 rounded-xl border border-border p-8 overflow-y-auto max-h-[calc(100vh-160px)] shadow-inner">
+          <div className="mb-4 flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
             <span>Real-time Preview</span>
-            <span>A4 Format</span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              Live
+            </span>
           </div>
           <CvPreview />
         </div>
