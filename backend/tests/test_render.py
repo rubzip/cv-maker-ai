@@ -1,5 +1,7 @@
+from unittest.mock import patch, MagicMock
+import os
 import pytest
-from app.utils.render import render_tex, render_cv
+from app.utils.render import render_tex, render_cv, tex_to_pdf
 from tests.utils import simple_cv, complex_cv
 
 
@@ -55,3 +57,28 @@ def test_render_cv_skipping_optional_fields(simple_cv):
     template = "Phone: <<cv.personal_info.phone or 'N/A'>>"
     rendered = render_cv(simple_cv, template)
     assert rendered == "Phone: N/A"
+
+
+def test_tex_to_pdf_not_found():
+    with patch("subprocess.run", side_effect=FileNotFoundError):
+        with pytest.raises(RuntimeError) as excinfo:
+            tex_to_pdf("\\documentclass{article}\\begin{document}Hello\\end{document}")
+        assert "pdflatex not found" in str(excinfo.value)
+
+
+@patch("subprocess.run")
+@patch("os.path.exists")
+@patch("builtins.open")
+def test_tex_to_pdf_success(mock_open, mock_exists, mock_run):
+    # Mock subprocess.run to succeed
+    mock_run.return_value = MagicMock(returncode=0)
+    # Mock os.path.exists to return True for the PDF file
+    mock_exists.return_value = True
+    # Mock open().read() to return some bytes
+    mock_file = MagicMock()
+    mock_file.read.return_value = b"%PDF-1.4 mock content"
+    mock_open.return_value.__enter__.return_value = mock_file
+
+    pdf_bytes = tex_to_pdf("\\documentclass{article}\\begin{document}Hello\\end{document}")
+    assert pdf_bytes == b"%PDF-1.4 mock content"
+    assert mock_run.called
