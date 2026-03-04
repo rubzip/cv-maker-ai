@@ -9,12 +9,15 @@ interface CvState {
     addSection: (title: string) => void;
     removeSection: (index: number) => void;
     updateSection: (index: number, title: string) => void;
+    reorderSections: (oldIndex: number, newIndex: number) => void;
     addExperience: (sectionIndex: number) => void;
     updateExperience: (sectionIndex: number, experienceIndex: number, experience: Partial<Experience>) => void;
     removeExperience: (sectionIndex: number, experienceIndex: number) => void;
     addSkillGroup: () => void;
     updateSkillGroup: (index: number, skillGroup: Partial<Skills>) => void;
     removeSkillGroup: (index: number) => void;
+    reorderSkillGroups: (oldIndex: number, newIndex: number) => void;
+    reorderSkills: (groupIndex: number, oldIndex: number, newIndex: number) => void;
     resetCv: () => void;
 }
 
@@ -40,6 +43,12 @@ export const useCvStore = create<CvState>()(
         updateSection: (index, title) =>
             set((state) => {
                 state.cv.sections[index].title = title;
+            }),
+
+        reorderSections: (oldIndex, newIndex) =>
+            set((state) => {
+                const [movedItem] = state.cv.sections.splice(oldIndex, 1);
+                state.cv.sections.splice(newIndex, 0, movedItem);
             }),
 
         addExperience: (sectionIndex) =>
@@ -83,6 +92,20 @@ export const useCvStore = create<CvState>()(
             set((state) => {
                 if (!state.cv.skills) return;
                 state.cv.skills.splice(index, 1);
+            }),
+
+        reorderSkillGroups: (oldIndex, newIndex) =>
+            set((state) => {
+                if (!state.cv.skills) return;
+                const [movedItem] = state.cv.skills.splice(oldIndex, 1);
+                state.cv.skills.splice(newIndex, 0, movedItem);
+            }),
+
+        reorderSkills: (groupIndex, oldIndex, newIndex) =>
+            set((state) => {
+                if (!state.cv.skills || !state.cv.skills[groupIndex]) return;
+                const [movedItem] = state.cv.skills[groupIndex].skills.splice(oldIndex, 1);
+                state.cv.skills[groupIndex].skills.splice(newIndex, 0, movedItem);
             }),
 
         resetCv: () =>

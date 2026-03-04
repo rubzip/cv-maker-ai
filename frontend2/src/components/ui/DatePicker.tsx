@@ -16,7 +16,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let month = parseInt(e.target.value) || 0
 
-        // Validation: Clamp between 1 and 12 if user finishes typing or leaves
         if (month > 12) month = 12
         if (month < 0) month = 0
 
@@ -29,21 +28,9 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const year = parseInt(e.target.value) || 0
         onChange({
-            month: value?.month || 1,
+            month: value?.month || 0,
             year
         })
-    }
-
-    const handleBlur = () => {
-        if (!value) return
-
-        let correctedMonth = value.month
-        if (correctedMonth < 1) correctedMonth = 1
-        if (correctedMonth > 12) correctedMonth = 12
-
-        if (correctedMonth !== value.month) {
-            onChange({ ...value, month: correctedMonth })
-        }
     }
 
     return (
@@ -54,8 +41,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
                     placeholder="MM"
                     value={value?.month || ""}
                     onChange={handleMonthChange}
-                    onBlur={handleBlur}
-                    min={1}
                     max={12}
                     className="tabular-nums"
                 />

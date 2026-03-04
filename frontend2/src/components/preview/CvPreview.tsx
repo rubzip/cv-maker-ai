@@ -5,8 +5,9 @@ export function CvPreview() {
     const { cv } = useCvStore()
     const { personal_info, sections, skills } = cv
 
-    const formatDate = (date: { month: number; year: number } | null) => {
+    const formatDate = (date: { month: number | null; year: number } | null) => {
         if (!date) return ""
+        if (!date.month || date.month === 0) return `${date.year}`
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         return `${months[date.month - 1]} ${date.year}`
     }
@@ -76,7 +77,22 @@ export function CvPreview() {
                                             </div>
                                         </div>
                                         <div className="text-sm font-medium text-muted-foreground/70 tabular-nums">
-                                            {formatDate(exp.interval?.start_date ?? null)} — {exp.interval?.end_date ? formatDate(exp.interval.end_date) : "Present"}
+                                            {(() => {
+                                                const start = exp.interval?.start_date;
+                                                const end = exp.interval?.end_date;
+                                                const hasStart = start && start.year !== 0;
+                                                const hasEnd = end && end.year !== 0;
+
+                                                if (!hasStart && !hasEnd) return null;
+
+                                                return (
+                                                    <>
+                                                        {hasStart ? formatDate(start) : ""}
+                                                        {hasStart && hasEnd ? " — " : ""}
+                                                        {hasEnd ? formatDate(end) : (hasStart ? " — Present" : "")}
+                                                    </>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                     {exp.url && (
