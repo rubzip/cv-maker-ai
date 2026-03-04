@@ -100,3 +100,37 @@ class CV(BaseModel):
     personal_info: PersonalInfo
     sections: List[Section]
     skills: Optional[List[Skills]]
+
+
+class JobPositionRaw(BaseModel):
+    title: str = Field(..., examples=["Senior React Developer"])
+    url: Optional[str] = Field(None, examples=[""])
+    full_description: str = Field(..., examples=["We are looking for..."])
+
+
+class JobPosition(BaseModel):
+    title: str = Field(..., examples=["Senior React Developer"])
+    company: str = Field(..., examples=["Tech Innovators Inc."])
+    location: Optional[str] = Field(None, examples=["Remote", "Madrid, Spain"])
+    url: Optional[str] = Fiel(None, examples=[""])
+    employment_type: Optional[str] = Field(
+        None, examples=["Full-time", "Part-time", "Contract"]
+    )
+    experience_level: Optional[str] = Field(
+        None, examples=["Mid-Senior level", "3+ years"]
+    )
+    description: str = Field(
+        ..., examples=["We are looking for a highly skilled developer to..."]
+    )
+    responsibilities: List[str] = Field(
+        default_factory=list, 
+        examples=[["Develop new user-facing features", "Optimize components for performance"]]
+    )
+    required_skills: List[str] = Field(
+        default_factory=list, 
+        examples=[["React", "TypeScript", "Tailwind CSS"]]
+    )
+    nice_to_have_skills: Optional[List[str]] = Field(
+        default_factory=list, 
+        examples=[["FastAPI", "Docker", "AWS"]]
+    )
