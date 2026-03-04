@@ -38,10 +38,6 @@ export function CvSectionsList() {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Sections
-            </h2>
-
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
