@@ -11,6 +11,11 @@ class Date(BaseModel):
             return self.year >= other.year
         return (self.year, self.month) >= (other.year, other.month)
 
+    def __gt__(self, other: "Date") -> bool:
+        if self.month is None or other.month is None:
+            return self.year > other.year
+        return (self.year, self.month) > (other.year, other.month)
+
     def to_str(self, mode: Literal["numeric", "short", "long"] = "numeric") -> str:
         MONTHS = (
             "", "January", "February", "March", "April", "May", "June",
@@ -112,7 +117,7 @@ class JobPosition(BaseModel):
     title: str = Field(..., examples=["Senior React Developer"])
     company: str = Field(..., examples=["Tech Innovators Inc."])
     location: Optional[str] = Field(None, examples=["Remote", "Madrid, Spain"])
-    url: Optional[str] = Fiel(None, examples=[""])
+    url: Optional[str] = Field(None, examples=[""])
     employment_type: Optional[str] = Field(
         None, examples=["Full-time", "Part-time", "Contract"]
     )
