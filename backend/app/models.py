@@ -42,7 +42,7 @@ class Interval(BaseModel):
             return self
         if self.start_date is None:
             raise ValueError("Start date is required if end date is given")
-        if self.start_date >= self.end_date:
+        if self.start_date > self.end_date:
             raise ValueError("Start date must be before end date")
         return self
 
