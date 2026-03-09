@@ -1,5 +1,5 @@
 pytest
 pydantic
 PyYAML
-fastapi
+fastapi[standard]
 jinja2

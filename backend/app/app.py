@@ -4,6 +4,9 @@ from app.models import CV
 
 
 app = FastAPI()
+@app.get("/")
+async def health_check():
+    return {"status": "ok", "message": "CV Maker AI API is running"}
 
 @app.post("/cv/generate-pdf", response_class=Response)
 async def generate_pdf_from_cv(cv: CV):

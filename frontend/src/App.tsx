@@ -2,9 +2,29 @@ import { CvForm } from "./components/form/CvForm"
 import { CvPreview } from "./components/preview/CvPreview"
 import { ThemeToggle } from "./components/ui/ThemeToggle"
 import { Button } from "./components/ui/Button"
-import { Download, Share2, Sparkles } from "lucide-react"
+import { Download, Share2, Sparkles, Loader2 } from "lucide-react"
+import { useState } from "react"
+import { useCvStore } from "./store/useCvStore"
+import { generatePdf, downloadBlob } from "./lib/api"
 
 function App() {
+  const [isExporting, setIsExporting] = useState(false)
+  const cv = useCvStore((state) => state.cv)
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true)
+      const blob = await generatePdf(cv)
+      const filename = `${cv.personal_info.name.replace(/\s+/g, "_")}_CV.pdf` || "CV.pdf"
+      downloadBlob(blob, filename)
+    } catch (error) {
+      console.error("Export failed:", error)
+      alert("Failed to export PDF. Please try again.")
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-neutral-200 dark:selection:bg-neutral-800">
       {/* Navigation */}
@@ -23,8 +43,23 @@ function App() {
             <Button variant="outline" size="sm">
               <Share2 className="w-4 h-4 mr-2" /> Share
             </Button>
-            <Button size="sm">
-              <Download className="w-4 h-4 mr-2" /> Export PDF
+            <Button
+              size="sm"
+              onClick={handleExport}
+              disabled={isExporting}
+              className="min-w-[120px]"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export PDF
+                </>
+              )}
             </Button>
           </div>
         </div>
