@@ -41,21 +41,24 @@ def tex_to_pdf(tex_content: str) -> bytes:
         with open(tex_file_path, "w") as f:
             f.write(tex_content)
 
-        # Run pdflatex
+        # Run xelatex
         try:
             result = subprocess.run(
-                ["pdflatex", "-interaction=nonstopmode", "cv.tex"],
+                ["xelatex", "-interaction=nonstopmode", "cv.tex"],
                 cwd=tmpdir,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 check=True,
             )
         except subprocess.CalledProcessError as e:
-            # You might want to log e.stdout or e.stderr here
-            raise RuntimeError(f"LaTeX compilation failed: {e.stderr.decode()}") from e
+            stdout = e.stdout.decode(errors="replace")
+            stderr = e.stderr.decode(errors="replace")
+            print(f"--- LaTeX STDOUT ---\n{stdout}")
+            print(f"--- LaTeX STDERR ---\n{stderr}")
+            raise RuntimeError(f"LaTeX compilation failed. STDOUT: {stdout[:500]}...") from e
         except FileNotFoundError:
             raise RuntimeError(
-                "pdflatex not found. Please install a LaTeX distribution (e.g., TeX Live)."
+                "xelatex not found. Please install a LaTeX distribution (e.g., TeX Live)."
             )
 
         pdf_path = os.path.join(tmpdir, "cv.pdf")

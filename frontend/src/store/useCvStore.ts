@@ -19,6 +19,7 @@ interface CvState {
     reorderSkillGroups: (oldIndex: number, newIndex: number) => void;
     reorderSkills: (groupIndex: number, oldIndex: number, newIndex: number) => void;
     resetCv: () => void;
+    setCv: (cv: CV) => void;
 }
 
 export const useCvStore = create<CvState>()(
@@ -111,6 +112,11 @@ export const useCvStore = create<CvState>()(
         resetCv: () =>
             set((state) => {
                 state.cv = emptyCV;
+            }),
+
+        setCv: (cv) =>
+            set((state) => {
+                state.cv = cv;
             }),
     }))
 );
