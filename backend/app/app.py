@@ -1,12 +1,23 @@
-from fastapi import FastAPI, Response, HTTPException
+from fastapi import FastAPI, Response, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.render import render_cv, tex_to_pdf
-from app.models import CV
-
-
+from app.models.schemas import CV, JobPosition
+from app.database.models import CVTable, JobPositionTable
+from app.database.session import init_db, SessionDep
+from app.database import crud
+from contextlib import asynccontextmanager
 import yaml
+from typing import List
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize database on startup
+    init_db()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,6 +30,76 @@ app.add_middleware(
 @app.get("/")
 async def health_check():
     return {"status": "ok", "message": "CV Maker AI API is running"}
+
+# --- CV Repository Endpoints ---
+
+@app.post("/cv/", response_model=CVTable)
+async def create_cv(cv: CV, session: SessionDep):
+    try:
+        return crud.create_cv(session, cv)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/cv/", response_model=List[CVTable])
+async def list_cvs(session: SessionDep, skip: int = 0, limit: int = 100):
+    return crud.get_cvs(session, skip, limit)
+
+@app.get("/cv/{cv_id}", response_model=CVTable)
+async def get_cv(cv_id: int, session: SessionDep):
+    db_cv = crud.get_cv(session, cv_id)
+    if db_cv is None:
+        raise HTTPException(status_code=404, detail="CV not found")
+    return db_cv
+
+@app.put("/cv/{cv_id}", response_model=CVTable)
+async def update_cv(cv_id: int, cv: CV, session: SessionDep):
+    db_cv = crud.update_cv(session, cv_id, cv)
+    if db_cv is None:
+        raise HTTPException(status_code=404, detail="CV not found")
+    return db_cv
+
+@app.delete("/cv/{cv_id}")
+async def delete_cv(cv_id: int, session: SessionDep):
+    success = crud.delete_cv(session, cv_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="CV not found")
+    return {"status": "success", "message": "CV deleted"}
+
+# --- Job Position Repository Endpoints ---
+
+@app.post("/job/", response_model=JobPositionTable)
+async def create_job_position(job: JobPosition, session: SessionDep):
+    try:
+        return crud.create_job_position(session, job)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/job/", response_model=List[JobPositionTable])
+async def list_job_positions(session: SessionDep, skip: int = 0, limit: int = 100):
+    return crud.get_job_positions(session, skip, limit)
+
+@app.get("/job/{job_id}", response_model=JobPositionTable)
+async def get_job_position(job_id: int, session: SessionDep):
+    db_job = crud.get_job_position(session, job_id)
+    if db_job is None:
+        raise HTTPException(status_code=404, detail="Job Position not found")
+    return db_job
+
+@app.put("/job/{job_id}", response_model=JobPositionTable)
+async def update_job_position(job_id: int, job: JobPosition, session: SessionDep):
+    db_job = crud.update_job_position(session, job_id, job)
+    if db_job is None:
+        raise HTTPException(status_code=404, detail="Job Position not found")
+    return db_job
+
+@app.delete("/job/{job_id}")
+async def delete_job_position(job_id: int, session: SessionDep):
+    success = crud.delete_job_position(session, job_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Job Position not found")
+    return {"status": "success", "message": "Job Position deleted"}
+
+# --- Existing Transformation Endpoints ---
 
 @app.post("/cv/generate-pdf", response_class=Response)
 async def generate_pdf_from_cv(cv: CV):
@@ -74,6 +155,7 @@ async def generate_yaml_from_cv(cv: CV):
             status_code=500,
             detail=f"Error: {str(e)}"
         )
+
 from pydantic import BaseModel
 
 class YamlInput(BaseModel):

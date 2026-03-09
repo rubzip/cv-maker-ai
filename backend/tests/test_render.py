@@ -60,10 +60,9 @@ def test_render_cv_skipping_optional_fields(simple_cv):
 
 
 def test_tex_to_pdf_not_found():
-    with patch("subprocess.run", side_effect=FileNotFoundError):
         with pytest.raises(RuntimeError) as excinfo:
             tex_to_pdf("\\documentclass{article}\\begin{document}Hello\\end{document}")
-        assert "pdflatex not found" in str(excinfo.value)
+        assert "xelatex not found" in str(excinfo.value)
 
 
 @patch("subprocess.run")

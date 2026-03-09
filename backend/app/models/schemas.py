@@ -1,7 +1,6 @@
 from typing import List, Optional, Literal
 from pydantic import BaseModel, Field, model_validator
 
-
 class Date(BaseModel):
     month: Optional[int] = Field(None, ge=1, le=12, examples=[1])
     year: int = Field(..., examples=[2021])
