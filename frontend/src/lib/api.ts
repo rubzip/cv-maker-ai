@@ -2,12 +2,12 @@ import type { CV } from "../types/cv";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+// --- Transformation Endpoints ---
+
 export async function generatePdf(cv: CV): Promise<Blob> {
     const response = await fetch(`${API_URL}/cv/generate-pdf`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cv),
     });
 
@@ -22,9 +22,7 @@ export async function generatePdf(cv: CV): Promise<Blob> {
 export async function generateTex(cv: CV): Promise<Blob> {
     const response = await fetch(`${API_URL}/cv/generate-tex`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cv),
     });
 
@@ -39,9 +37,7 @@ export async function generateTex(cv: CV): Promise<Blob> {
 export async function generateYaml(cv: CV): Promise<Blob> {
     const response = await fetch(`${API_URL}/cv/generate-yaml`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cv),
     });
 
@@ -56,9 +52,7 @@ export async function generateYaml(cv: CV): Promise<Blob> {
 export async function parseYaml(yamlContent: string): Promise<CV> {
     const response = await fetch(`${API_URL}/cv/parse-yaml`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ yaml_content: yamlContent }),
     });
 
@@ -69,6 +63,90 @@ export async function parseYaml(yamlContent: string): Promise<CV> {
 
     return await response.json();
 }
+
+// --- CV Repository Endpoints ---
+
+export async function saveCv(cv: CV): Promise<any> {
+    const response = await fetch(`${API_URL}/cv/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cv),
+    });
+    if (!response.ok) throw new Error("Failed to save CV");
+    return await response.json();
+}
+
+export async function listCvs(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/cv/`);
+    if (!response.ok) throw new Error("Failed to list CVs");
+    return await response.json();
+}
+
+export async function getCv(id: number): Promise<any> {
+    const response = await fetch(`${API_URL}/cv/${id}`);
+    if (!response.ok) throw new Error("Failed to get CV");
+    return await response.json();
+}
+
+export async function updateCv(id: number, cv: CV): Promise<any> {
+    const response = await fetch(`${API_URL}/cv/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cv),
+    });
+    if (!response.ok) throw new Error("Failed to update CV");
+    return await response.json();
+}
+
+export async function deleteCv(id: number): Promise<void> {
+    const response = await fetch(`${API_URL}/cv/${id}`, {
+        method: "DELETE",
+    });
+    if (!response.ok) throw new Error("Failed to delete CV");
+}
+
+// --- Job Repository Endpoints ---
+
+export async function saveJob(job: any): Promise<any> {
+    const response = await fetch(`${API_URL}/job/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(job),
+    });
+    if (!response.ok) throw new Error("Failed to save Job");
+    return await response.json();
+}
+
+export async function listJobs(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/job/`);
+    if (!response.ok) throw new Error("Failed to list Jobs");
+    return await response.json();
+}
+
+export async function getJob(id: number): Promise<any> {
+    const response = await fetch(`${API_URL}/job/${id}`);
+    if (!response.ok) throw new Error("Failed to get Job");
+    return await response.json();
+}
+
+export async function updateJob(id: number, job: any): Promise<any> {
+    const response = await fetch(`${API_URL}/job/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(job),
+    });
+    if (!response.ok) throw new Error("Failed to update Job");
+    return await response.json();
+}
+
+export async function deleteJob(id: number): Promise<void> {
+    const response = await fetch(`${API_URL}/job/${id}`, {
+        method: "DELETE",
+    });
+    if (!response.ok) throw new Error("Failed to delete Job");
+}
+
+// --- Utils ---
 
 export function downloadBlob(blob: Blob, filename: string) {
     const url = window.URL.createObjectURL(blob);
