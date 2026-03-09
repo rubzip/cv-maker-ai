@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useCvStore } from "../../store/useCvStore"
 import { PersonalInfoForm } from "./PersonalInfoForm"
+import { SocialNetworksForm } from "./SocialNetworksForm"
 import { SkillsForm } from "./SkillsForm"
 import { CvSectionsList } from "./CvSectionsList"
 import { Button } from "../ui/Button"
@@ -22,7 +23,12 @@ export function CvForm() {
 
     const renderTabContent = () => {
         switch (activeTab) {
-            case "personal": return <PersonalInfoForm />
+            case "personal": return (
+                <div className="space-y-6">
+                    <PersonalInfoForm />
+                    <SocialNetworksForm />
+                </div>
+            )
             case "sections": return (
                 <div className="space-y-6">
                     <CvSectionsList />

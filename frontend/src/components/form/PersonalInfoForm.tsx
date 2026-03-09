@@ -1,22 +1,25 @@
-import * as React from "react"
+import type { ChangeEvent } from "react"
 import { useCvStore } from "../../store/useCvStore"
 import { Input } from "../ui/Input"
-import { Card } from "../ui/Card"
+import { FormCard } from "./FormCard"
 
 export function PersonalInfoForm() {
-    const { cv, setPersonalInfo } = useCvStore()
+    const {
+        cv,
+        setPersonalInfo
+    } = useCvStore()
     const { personal_info } = cv
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
         setPersonalInfo({ [name]: value })
     }
 
     return (
-        <Card className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormCard title="Personal Information">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">
+                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
                         Full Name <span className="text-destructive">*</span>
                     </label>
                     <Input
@@ -27,7 +30,7 @@ export function PersonalInfoForm() {
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">
+                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
                         Email Address <span className="text-destructive">*</span>
                     </label>
                     <Input
@@ -39,7 +42,7 @@ export function PersonalInfoForm() {
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">Phone Number</label>
+                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Phone Number</label>
                     <Input
                         name="phone"
                         value={personal_info.phone ?? ""}
@@ -48,7 +51,7 @@ export function PersonalInfoForm() {
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">Location</label>
+                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Location</label>
                     <Input
                         name="address"
                         value={personal_info.address ?? ""}
@@ -57,7 +60,7 @@ export function PersonalInfoForm() {
                     />
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">Website / Portfolio</label>
+                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Website / Portfolio</label>
                     <Input
                         name="website"
                         value={personal_info.website ?? ""}
@@ -65,18 +68,19 @@ export function PersonalInfoForm() {
                         placeholder="https://janedoe.com"
                     />
                 </div>
+
                 <div className="md:col-span-2 space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-500">About / Summary</label>
+                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">About / Summary</label>
                     <textarea
                         name="about"
                         value={personal_info.about ?? ""}
                         onChange={handleChange}
-                        rows={3}
-                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        rows={4}
+                        className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                         placeholder="Brief professional summary..."
                     />
                 </div>
             </div>
-        </Card>
+        </FormCard>
     )
 }

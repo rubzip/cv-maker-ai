@@ -42,6 +42,14 @@ export function CvPreview() {
                             <span>{personal_info.website.replace(/^https?:\/\//, "")}</span>
                         </div>
                     )}
+                    {personal_info.social_networks.map((sn, index) => (
+                        <div key={index} className="flex items-center gap-1.5">
+                            {sn.network.toLowerCase().includes("github") && <ExternalLink className="w-4 h-4 text-primary/70" />}
+                            {sn.network.toLowerCase().includes("linkedin") && <ExternalLink className="w-4 h-4 text-primary/70" />}
+                            {!sn.network.toLowerCase().includes("github") && !sn.network.toLowerCase().includes("linkedin") && <ExternalLink className="w-4 h-4 text-primary/70" />}
+                            <span>{sn.username.replace(/^https?:\/\/(www\.)?/, "")}</span>
+                        </div>
+                    ))}
                 </div>
                 {personal_info.about && (
                     <p className="text-sm leading-relaxed text-muted-foreground/90">

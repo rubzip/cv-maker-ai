@@ -18,6 +18,9 @@ interface CvState {
     removeSkillGroup: (index: number) => void;
     reorderSkillGroups: (oldIndex: number, newIndex: number) => void;
     reorderSkills: (groupIndex: number, oldIndex: number, newIndex: number) => void;
+    addSocialNetwork: () => void;
+    updateSocialNetwork: (index: number, network: Partial<CV["personal_info"]["social_networks"][0]>) => void;
+    removeSocialNetwork: (index: number) => void;
     resetCv: () => void;
     setCv: (cv: CV) => void;
 }
@@ -107,6 +110,24 @@ export const useCvStore = create<CvState>()(
                 if (!state.cv.skills || !state.cv.skills[groupIndex]) return;
                 const [movedItem] = state.cv.skills[groupIndex].skills.splice(oldIndex, 1);
                 state.cv.skills[groupIndex].skills.splice(newIndex, 0, movedItem);
+            }),
+
+        addSocialNetwork: () =>
+            set((state) => {
+                state.cv.personal_info.social_networks.push({ network: "", username: "" });
+            }),
+
+        updateSocialNetwork: (index, network) =>
+            set((state) => {
+                state.cv.personal_info.social_networks[index] = {
+                    ...state.cv.personal_info.social_networks[index],
+                    ...network,
+                };
+            }),
+
+        removeSocialNetwork: (index) =>
+            set((state) => {
+                state.cv.personal_info.social_networks.splice(index, 1);
             }),
 
         resetCv: () =>
