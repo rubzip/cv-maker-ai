@@ -4,3 +4,4 @@
  - [] Dynamic web title using useEffect
  - [] Design other screens
  - [] Integrate with API 
+ - [] Add Social networks to Cv-form
