@@ -81,7 +81,9 @@ class FileStorage:
             return True
         return False
 
+from app.core.config import settings
+
 # Initialize storages
-DATA_DIR = os.getenv("DATA_DIR", "data")
-cv_storage = FileStorage(os.path.join(DATA_DIR, "cvs"))
-job_storage = FileStorage(os.path.join(DATA_DIR, "jobs"))
+cv_storage = FileStorage(os.path.join(settings.DATA_DIR, "cvs"))
+job_storage = FileStorage(os.path.join(settings.DATA_DIR, "jobs"))
+

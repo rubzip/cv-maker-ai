@@ -6,6 +6,8 @@ import jinja2
 from app.models import CV
 
 
+import re
+
 latex_env = jinja2.Environment(
     block_start_string="<%",
     block_end_string="%>",
@@ -16,6 +18,47 @@ latex_env = jinja2.Environment(
     trim_blocks=True,
     autoescape=False,
 )
+
+def escape_latex(text: str) -> str:
+    """
+    Escapes LaTeX special characters in a string.
+    """
+    if not isinstance(text, str):
+        return text
+    
+    # Map of special characters to their escaped versions
+    conv = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\textasciicircum{}',
+        '\\': r'\textbackslash{}',
+    }
+    
+    regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(conv.keys(), key=lambda item: -len(item))))
+    return regex.sub(lambda match: conv[match.group()], text)
+
+def escape_latex_recursive(data):
+    """
+    Recursively escapes LaTeX characters in strings within dicts, lists, and models.
+    """
+    if isinstance(data, str):
+        return escape_latex(data)
+    elif isinstance(data, list):
+        return [escape_latex_recursive(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: escape_latex_recursive(value) for key, value in data.items()}
+    elif hasattr(data, "model_dump"): # For Pydantic models
+        return escape_latex_recursive(data.model_dump(exclude_none=True))
+    return data
+
+# Register the filter
+latex_env.filters['e_tex'] = escape_latex
 
 
 def render_tex(tex_template: str, **kwargs) -> str:
@@ -29,7 +72,9 @@ def render_cv(
     tex_template: str,
     date_format: Literal["numeric", "short", "long"] = "numeric",
 ) -> str:
-    return render_tex(tex_template=tex_template, cv=cv, date_format=date_format)
+    # Escape all strings in the CV data recursively
+    escaped_cv_data = escape_latex_recursive(cv)
+    return render_tex(tex_template=tex_template, cv=escaped_cv_data, date_format=date_format)
 
 
 def tex_to_pdf(tex_content: str) -> bytes:

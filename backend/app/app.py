@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.utils.render import render_cv, tex_to_pdf
 from app.models.schemas import CV, JobPosition
 from app.storage import cv_storage, job_storage
+from app.core.config import settings
+from app.utils.llm import GroqProvider, MockProvider, cv_refinement, CVRefinementResponse
 import yaml
 from typing import List
 
@@ -160,4 +162,29 @@ async def parse_yaml_to_cv(input: YamlInput):
         raise HTTPException(
             status_code=400,
             detail=f"Invalid YAML or CV format: {str(e)}"
+        )
+# --- AI Refinement Endpoints ---
+
+class RefineRequest(BaseModel):
+    cv: CV
+    job_position: JobPosition
+
+@app.post("/cv/refine", response_model=CVRefinementResponse)
+async def refine_cv(request: RefineRequest):
+    try:
+        # Use Groq if API key is provided, otherwise fallback to Mock for safety
+        if settings.GROQ_API_KEY and not settings.GROQ_API_KEY.startswith("gsk_..."):
+            llm = GroqProvider(
+                api_key=settings.GROQ_API_KEY,
+                model=settings.GROQ_MODEL
+            )
+        else:
+            llm = MockProvider()
+            
+        result = await cv_refinement(request.cv, request.job_position, llm)
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Optimization failed: {str(e)}"
         )

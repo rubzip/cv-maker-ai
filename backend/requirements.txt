@@ -1,6 +1,9 @@
 pytest
+pytest-asyncio
 pydantic
 PyYAML
 fastapi[standard]
 jinja2
 pydantic-settings
+groq
+python-dotenv
