@@ -173,7 +173,7 @@ class RefineRequest(BaseModel):
 async def refine_cv(request: RefineRequest):
     try:
         # Use Groq if API key is provided, otherwise fallback to Mock for safety
-        if settings.GROQ_API_KEY and not settings.GROQ_API_KEY.startswith("gsk_..."):
+        if settings.GROQ_API_KEY:
             llm = GroqProvider(
                 api_key=settings.GROQ_API_KEY,
                 model=settings.GROQ_MODEL

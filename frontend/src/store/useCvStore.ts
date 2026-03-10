@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { emptyCV } from "../types/cv";
 import type { CVRecord, CV, PersonalInfo, Experience, Skills } from "../types/cv";
-import { listCvs, saveCv, updateCv } from "../lib/api";
+import { listCvs, saveCv, updateCv, getCv } from "../lib/api";
 
 interface CvState {
     cv: CV;
@@ -30,6 +30,7 @@ interface CvState {
     setCvName: (name: string) => void;
     setCvId: (id: number | null) => void;
     fetchCvs: () => Promise<void>;
+    duplicateCv: (id: number) => Promise<void>;
     syncToDb: () => Promise<void>;
 }
 
@@ -166,6 +167,27 @@ export const useCvStore = create<CvState>()(
         fetchCvs: async () => {
             set((state) => { state.isLoading = true; });
             try {
+                const cvs = await listCvs();
+                set((state) => { state.cvs = cvs; });
+            } finally {
+                set((state) => { state.isLoading = false; });
+            }
+        },
+
+        duplicateCv: async (id: number) => {
+            set((state) => { state.isLoading = true; });
+            try {
+                const record = await getCv(id);
+                const originalCv = record.data;
+
+                const newCv: CV = {
+                    ...originalCv,
+                    name: `Copy of ${originalCv.name}`
+                };
+
+                await saveCv(newCv);
+
+                // Refresh list
                 const cvs = await listCvs();
                 set((state) => { state.cvs = cvs; });
             } finally {

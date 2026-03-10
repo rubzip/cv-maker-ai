@@ -115,7 +115,7 @@
         <% for experience in section.content %>
             \resumeSubheading
             {<< experience.name >>}{<% if experience.location %><< experience.location >><% endif %>}
-            {<% if experience.institution %><< experience.institution >><% endif %>}
+            {<% if experience.institution %><% if experience.url %>\href{<< experience.url >>}{<< experience.institution >>}<% else %><< experience.institution >><% endif %><% endif %>}
             {<% if experience.interval %><% set dates = experience.interval.to_str('short') %><% if dates %><< dates[0] >> -- << dates[1] >><% endif %><% endif %>}
             
             <% if experience.description %>

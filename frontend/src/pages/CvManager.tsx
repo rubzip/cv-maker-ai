@@ -13,7 +13,7 @@ import { Button } from "../components/ui/Button"
 import { deleteCv } from "../lib/api"
 
 export default function CvManager() {
-    const { cvs, fetchCvs, isLoading } = useCvStore()
+    const { cvs, fetchCvs, duplicateCv, isLoading } = useCvStore()
     const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
@@ -111,7 +111,7 @@ export default function CvManager() {
                                         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive transition-colors" onClick={() => handleDelete(cv.id)}>
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors" onClick={() => duplicateCv(cv.id)}>
                                             <Copy className="w-4 h-4" />
                                         </Button>
                                     </div>

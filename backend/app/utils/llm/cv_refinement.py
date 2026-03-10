@@ -1,10 +1,13 @@
 import json
 import re
+import logging
 from pydantic import BaseModel, Field
 from app.utils.llm.base import BaseLLM
 from app.utils.llm.prompts import PromptTemplate
 from app.models import CV, JobPosition
 
+# Set up logging
+logger = logging.getLogger(__name__)
 
 class CVRefinementResponse(BaseModel):
     cv: CV
@@ -69,23 +72,34 @@ async def cv_refinement(cv: CV, job_position: JobPosition, llm: BaseLLM) -> CVRe
     )
     
     # 3. Call the LLM (forcing JSON mode if supported)
-    response = await llm.chat(
-        messages, 
-        response_format={"type": "json_object"} if "gpt-4" in getattr(llm, 'model', '') or "llama-3" in getattr(llm, 'model', '') else None
-    )
+    logger.info(f"Starting CV refinement for job: {job_position.title} at {job_position.company}")
+    try:
+        response = await llm.chat(
+            messages, 
+            response_format={"type": "json_object"} if "gpt-4" in getattr(llm, 'model', '') or "llama-3" in getattr(llm, 'model', '') else None
+        )
+    except Exception as e:
+        logger.error(f"LLM Chat Error: {str(e)}")
+        return CVRefinementResponse(
+            cv=cv,
+            reasoning=f"LLM call failed: {str(e)}"
+        )
     
     # 4. Extract and validate JSON from the response content
     try:
         # Try to find JSON block if it's wrapped in markdown
-        json_match = re.search(r'\{.*\}', response.content, re.DOTALL)
+        content = response.content.strip()
+        json_match = re.search(r'\{.*\}', content, re.DOTALL)
         if json_match:
             data = json.loads(json_match.group())
         else:
-            data = json.loads(response.content)
+            data = json.loads(content)
             
         return CVRefinementResponse.model_validate(data)
     except Exception as e:
         # Fallback if parsing fails
+        logger.error(f"CV Refinement Parsing Error: {str(e)}")
+        logger.debug(f"Original response content: {response.content}")
         return CVRefinementResponse(
             cv=cv,
             reasoning=f"Error parsing LLM response: {str(e)}. Original response snippet: {response.content[:200]}"

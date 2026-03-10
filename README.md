@@ -37,6 +37,35 @@ sudo docker-compose rm -f -v
 sudo docker-compose up --build -d
 ```
 
+### No docker running
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/rubzip/cv-maker-ai.git
+cd cv-maker-ai
+cp .env.example .env
+#  2. Customize .env file
+groq_api_key=
+groq_model=
+
+# 3. Backend
+cd backend
+make venv
+make install
+make activate
+make test
+uvicorn app.app:app --host 0.0.0.0 --port 8000 --reload
+
+# 4. Frontend
+cd ../frontend
+npm install
+npm run dev
+
+```
+
+
+
+
 - **Frontend Builder:** [http://localhost:3000](http://localhost:3000)
 - **API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
 

@@ -1,5 +1,4 @@
-import pytest
-from app.utils.render import escape_latex, escape_latex_recursive, render_cv
+from app.utils.render import escape_latex, render_cv
 from app.models.schemas import CV, PersonalInfo, Section, Experience
 
 def test_basic_escape_latex():
@@ -13,24 +12,7 @@ def test_basic_escape_latex():
     assert escape_latex("carat ^") == r"carat \textasciicircum{}"
     assert escape_latex("slash \\") == r"slash \textbackslash{}"
 
-def test_escape_latex_recursive():
-    data = {
-        "name": "Jane % Doe",
-        "email": "jane@example.com",
-        "description": ["Worked on A & B", "Managed $1M project"],
-        "metadata": {
-            "tags": ["#python", "latex_fix"]
-        }
-    }
-    
-    escaped = escape_latex_recursive(data)
-    assert escaped["name"] == r"Jane \% Doe"
-    assert escaped["description"][0] == r"Worked on A \& B"
-    assert escaped["description"][1] == r"Managed \$1M project"
-    assert escaped["metadata"]["tags"][0] == r"\#python"
-    assert escaped["metadata"]["tags"][1] == r"latex\_fix"
-
-def test_render_cv_with_escaping():
+def test_render_cv_with_auto_escaping():
     cv = CV(
         name="Resume % 2024",
         personal_info=PersonalInfo(
@@ -61,3 +43,42 @@ def test_render_cv_with_escaping():
     assert r"John \& Doe" in rendered
     assert r"Experience \& Projects" in rendered
     assert r"Software Engineer \_ Lead" in rendered
+
+def test_render_cv_institution_hyperlink():
+    cv = CV(
+        name="Test CV",
+        personal_info=PersonalInfo(name="Test User", email="test@example.com", social_networks=[]),
+        sections=[
+            Section(
+                title="Experience",
+                content=[
+                    Experience(
+                        name="Dev",
+                        institution="Google",
+                        url="https://google.com",
+                        description=[]
+                    ),
+                    Experience(
+                        name="Dev 2",
+                        institution="Microsoft",
+                        url=None,
+                        description=[]
+                    )
+                ]
+            )
+        ],
+        skills=[]
+    )
+    
+    # Load the actual template
+    template_path = "app/static/latex_templates/jakes_resume_template.tex"
+    with open(template_path, "r") as f:
+        template_content = f.read()
+    
+    rendered = render_cv(cv, template_content)
+    
+    # Check for hyperlinked Google
+    assert r"\href{https://google.com}{Google}" in rendered or r"\href{https://google.com}{Google}" in rendered
+    # Check for non-hyperlinked Microsoft
+    assert "Microsoft" in rendered
+    assert r"\href{" not in rendered.split("Microsoft")[0].split("Dev 2")[-1] # Simple check that it's not wrapped

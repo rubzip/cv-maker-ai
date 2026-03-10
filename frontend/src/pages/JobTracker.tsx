@@ -9,17 +9,23 @@ import {
     X,
     Link as LinkIcon
 } from "lucide-react"
-import { listJobs, deleteJob, saveJob } from "../lib/api"
+import { listJobs, deleteJob, saveJob, getCv, refineCv, saveCv } from "../lib/api"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
+import { CvSelectionModal } from "../components/ui/CvSelectionModal"
+import { useNavigate } from "react-router-dom"
 
 import type { JobPositionRecord, JobPosition } from "../types/cv"
 
 export default function JobTracker() {
+    const navigate = useNavigate()
     const [jobs, setJobs] = useState<JobPositionRecord[]>([])
     const [isLoading, setIsLoading] = useState(false)
+    const [isOptimizing, setIsOptimizing] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [isAddingJob, setIsAddingJob] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [selectedJob, setSelectedJob] = useState<JobPositionRecord | null>(null)
     const [newJob, setNewJob] = useState<JobPosition>({
         title: "",
         company: "",
@@ -69,6 +75,39 @@ export default function JobTracker() {
         } catch (err) {
             console.error("Failed to save job:", err)
             alert("Failed to save job")
+        }
+    }
+
+    const handleAdaptStart = (job: JobPositionRecord) => {
+        setSelectedJob(job)
+        setIsModalOpen(true)
+    }
+
+    const handleSelectCv = async (cvId: number) => {
+        if (!selectedJob) return
+
+        setIsOptimizing(true)
+        try {
+            // 1. Get the base CV
+            const baseCvRecord = await getCv(cvId)
+
+            // 2. Call refinement API
+            const { cv: refinedCv, reasoning: _reasoning } = await refineCv(baseCvRecord.data, selectedJob.data)
+
+            // 3. Save as new CV
+            const savedCv = await saveCv({
+                ...refinedCv,
+                name: `Optimized: ${selectedJob.data.company} - ${selectedJob.data.title}`
+            })
+
+            // 4. Redirect to editor
+            navigate(`/editor/${savedCv.id}`)
+        } catch (err) {
+            console.error("Adaptation failed:", err)
+            alert("Failed to optimize resume. Please try again.")
+        } finally {
+            setIsOptimizing(false)
+            setIsModalOpen(false)
         }
     }
 
@@ -250,7 +289,7 @@ export default function JobTracker() {
                                 </span>
                                 <Button
                                     className="h-9 px-5 rounded-md font-semibold bg-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white shadow-sm transition-all focus:ring-2 focus:ring-neutral-400"
-                                    onClick={() => console.log("Adapt for job:", job.id)}
+                                    onClick={() => handleAdaptStart(job)}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 mr-2" />
                                     Adapt Resume
@@ -260,6 +299,13 @@ export default function JobTracker() {
                     ))}
                 </div>
             )}
+
+            <CvSelectionModal
+                isOpen={isModalOpen}
+                isOptimizing={isOptimizing}
+                onClose={() => setIsModalOpen(false)}
+                onSelect={handleSelectCv}
+            />
 
             {/* Hint Box */}
             <div className="bg-neutral-50 dark:bg-neutral-900/50 p-6 rounded-lg border border-neutral-200 dark:border-neutral-800 flex items-start gap-4">

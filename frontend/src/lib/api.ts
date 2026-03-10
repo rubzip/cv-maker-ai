@@ -105,6 +105,21 @@ export async function deleteCv(id: number): Promise<void> {
     if (!response.ok) throw new Error("Failed to delete CV");
 }
 
+export async function refineCv(cv: CV, job: JobPosition): Promise<{ cv: CV; reasoning: string }> {
+    const response = await fetch(`${API_URL}/cv/refine`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cv, job_position: job }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: "Unknown error" }));
+        throw new Error(errorData.detail || "Failed to refine CV");
+    }
+
+    return await response.json();
+}
+
 // --- Job Repository Endpoints ---
 
 export async function saveJob(job: JobPosition): Promise<JobPositionRecord> {
