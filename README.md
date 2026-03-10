@@ -1,73 +1,70 @@
 # 📄 AI CV Maker
 
-> A high-performance, open-source CV builder designed for developers. Create your Master Profile once, and use AI to perfectly tailor your resume to any job opening in seconds.
+> **The developer-first, AI-powered resume engineer.** 
+> Create a single Master Profile and generate perfectly tailored, ATS-friendly resumes for any job opening in seconds.
 
-## ✨ Features
+---
 
-- **Latex-based:**
-- **🤖 100% ATS-Friendly:** Generates clean, parseable resume structures without the bloated layouts that confuse Applicant Tracking Systems.
-- **🌍 100% Open Source:** Own your data. No hidden paywalls, no watermarks, and no subscription traps.
-- **💻 Local Privacy:** Run the entire stack (Frontend, Backend, and Database) on your local machine. Your career data never leaves your control unless you want it to.
-- **✨ AI Tailoring:** Stop maintaining 10 different Word documents. Save a job opening URL, and the AI will clone your Master CV, filtering and rewriting your bullet points to match the exact `required_skills` of the job—without destroying your original data.
+## 🔥 Why AI CV Maker?
 
-## 🚀 Getting Started with Docker
+Traditional resume builders are either bloated, expensive, or fail at basic ATS (Applicant Tracking System) parsing. **AI CV Maker** is built for developers who want professional typesetting and AI-driven tailoring without the friction.
 
-The easiest way to run the entire stack is using Docker Compose.
+### 🛡️ Local-First & Privacy Centric
+Your data never leaves your machine. The entire stack runs locally, persisting your Master CV and Job applications as simple, human-readable **YAML files**.
 
-### Prerequisites
+### 🤖 Intelligent AI Tailoring
+Stop maintaining dozens of separate Word documents. Paste a job description or URL, and our AI clones your Master CV—rewriting, filtering, and highlighting your experience to match the exact requirements of the role.
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose V2](https://docs.docker.com/compose/install/) (included with Docker Desktop and modern Docker Engine)
+### 📄 Professional LaTeX Typesetting
+Unlike HTML-to-PDF converters that produce messy, non-standard layouts, AI CV Maker uses **LaTeX** to generate clean, high-performance resumes that pass every ATS check with flying colors.
 
-### Quick Start
+---
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/rubzip/cv-maker-ai.git
-    cd cv-maker-ai
-    ```
+## 🚀 Quick Start
 
-2.  **Launch the stack (V2):**
-    ```bash
-    sudo docker compose up --build -d
-    ```
-
-### 🛠️ Troubleshooting
-
-If you get `docker: unknown command: docker compose` or `KeyError: 'ContainerConfig'`, you are using an old version of Docker Compose.
-
-**Install Docker Compose V2 on Ubuntu:**
-```bash
-sudo apt update && sudo apt install docker-compose-v2
-```
-
-### 📦 Manual Fallback (No Compose)
-
-If you cannot use Docker Compose, you can run the containers manually:
-
-1. **Build the images:**
-   ```bash
-   sudo docker build -t cv-backend ./backend
-   sudo docker build -t cv-frontend ./frontend
-   ```
-
-2. **Run the Backend:**
-   ```bash
-   sudo docker run -d -p 8000:8000 --name cv-backend cv-backend
-   ```
-
-3. **Run the Frontend:**
-   ```bash
-   sudo docker run -d -p 3000:3000 -e VITE_API_URL=http://localhost:8000 --name cv-frontend cv-frontend
-   ```
-
-### Technical Details
-
-- The **Backend** uses FastAPI and requires a LaTeX distribution to generate PDFs. This is pre-configured in the `backend/Dockerfile`.
-- The **Frontend** is built with Vite and React, served using `serve` in the production container.
-
-### Stopping the services
+Launch the entire professional stack (Frontend + Backend + Storage) with a single command:
 
 ```bash
-docker compose down
+# 1. Clone the repository
+git clone https://github.com/rubzip/cv-maker-ai.git
+cd cv-maker-ai
+cp .env.example .env
+
+# 2. Launch with Docker (V2)
+sudo docker compose up --build -d
 ```
+
+- **Frontend Builder:** [http://localhost:3000](http://localhost:3000)
+- **API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** [Vite](https://vitejs.dev/) + [React](https://reactjs.org/) + [Zustand](https://github.com/pmndrs/zustand)
+- **Aesthetics:** Tech Minimalist (Neutral Zinc / Premium Dark Mode Support)
+- **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python 3.12)
+- **Persistence:** YAML Flat-file storage
+- **Engine:** LaTeX (Professional PDF Rendering)
+
+---
+
+## 📂 Project Structure
+
+```text
+.
+├── backend/            # FastAPI Backend & LaTeX Engines
+│   ├── app/            # Application logic
+│   └── data/           # (Mapped) YAML Storage
+├── frontend/           # Vite + React Builder UI
+│   ├── src/components/ # Ultra-minimalist UI components
+│   └── src/store/      # Zustand State Management
+├── data/               # Persistent Volume (CVs & Jobs)
+└── docker-compose.yml  # Orchestration
+```
+
+---
+
+## 📜 License
+
+100% Open Source. Distributed under the MIT License. Own your data. Own your career.

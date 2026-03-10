@@ -7,6 +7,5 @@ from .schemas import (
     Section,
     Skills,
     CV,
-    JobPositionRaw,
     JobPosition,
 )

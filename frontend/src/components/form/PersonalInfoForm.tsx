@@ -1,83 +1,85 @@
-import type { ChangeEvent } from "react"
 import { useCvStore } from "../../store/useCvStore"
-import { Input } from "../ui/Input"
 import { FormCard } from "./FormCard"
+import { User, MapPin } from "lucide-react"
 
 export function PersonalInfoForm() {
     const {
         cv,
         setPersonalInfo
     } = useCvStore()
-    const { personal_info } = cv
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target
-        setPersonalInfo({ [name]: value })
-    }
 
     return (
-        <FormCard title="Personal Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                        Full Name <span className="text-destructive">*</span>
-                    </label>
-                    <Input
-                        name="name"
-                        value={personal_info.name}
-                        onChange={handleChange}
-                        placeholder="Jane Doe"
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                        Email Address <span className="text-destructive">*</span>
-                    </label>
-                    <Input
-                        name="email"
-                        type="email"
-                        value={personal_info.email}
-                        onChange={handleChange}
-                        placeholder="jane.doe@example.com"
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Phone Number</label>
-                    <Input
-                        name="phone"
-                        value={personal_info.phone ?? ""}
-                        onChange={handleChange}
-                        placeholder="+1 234 567 8900"
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Location</label>
-                    <Input
-                        name="address"
-                        value={personal_info.address ?? ""}
-                        onChange={handleChange}
-                        placeholder="San Francisco, CA"
-                    />
-                </div>
-                <div className="md:col-span-2 space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Website / Portfolio</label>
-                    <Input
-                        name="website"
-                        value={personal_info.website ?? ""}
-                        onChange={handleChange}
-                        placeholder="https://janedoe.com"
+        <FormCard
+            title="Personal Information"
+            icon={User}
+            description="Basic contact details for your resume."
+        >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Full Name</label>
+                    <input
+                        type="text"
+                        placeholder="John Doe"
+                        className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                        value={cv.personal_info.name}
+                        onChange={(e) => setPersonalInfo({ name: e.target.value })}
                     />
                 </div>
 
-                <div className="md:col-span-2 space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">About / Summary</label>
+                <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Email Address</label>
+                    <input
+                        type="email"
+                        placeholder="john.doe@example.com"
+                        className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                        value={cv.personal_info.email}
+                        onChange={(e) => setPersonalInfo({ email: e.target.value })}
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Phone Number</label>
+                    <input
+                        type="tel"
+                        placeholder="+34 600 000 000"
+                        className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                        value={cv.personal_info.phone || ""}
+                        onChange={(e) => setPersonalInfo({ phone: e.target.value })}
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Website / Portfolio</label>
+                    <input
+                        type="url"
+                        placeholder="https://johndoe.me"
+                        className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                        value={cv.personal_info.website || ""}
+                        onChange={(e) => setPersonalInfo({ website: e.target.value })}
+                    />
+                </div>
+
+                <div className="col-span-1 md:col-span-2 space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Address / Location</label>
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <input
+                            type="text"
+                            placeholder="Madrid, Spain"
+                            className="w-full bg-muted/50 border border-border/50 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                            value={cv.personal_info.address || ""}
+                            onChange={(e) => setPersonalInfo({ address: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                <div className="col-span-1 md:col-span-2 space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">About / Professional Summary</label>
                     <textarea
-                        name="about"
-                        value={personal_info.about ?? ""}
-                        onChange={handleChange}
-                        rows={4}
-                        className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                        placeholder="Brief professional summary..."
+                        placeholder="Passionate developer with 5+ years of experience building scalable applications..."
+                        className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium min-h-[120px] resize-none"
+                        value={cv.personal_info.about || ""}
+                        onChange={(e) => setPersonalInfo({ about: e.target.value })}
                     />
                 </div>
             </div>

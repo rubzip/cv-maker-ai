@@ -24,6 +24,7 @@ export interface PersonalInfo {
 }
 
 export interface Experience {
+    id?: string;
     name: string;
     institution: string | null;
     location: string | null;
@@ -33,22 +34,52 @@ export interface Experience {
 }
 
 export interface Section {
+    id?: string;
     title: string;
     content: Experience[];
 }
 
 export interface Skills {
+    id?: string;
     skill_group: string;
     skills: string[];
 }
 
 export interface CV {
+    id?: number;
+    name: string;
     personal_info: PersonalInfo;
     sections: Section[];
     skills: Skills[] | null;
+    created_at?: string;
+}
+
+export interface JobPosition {
+    id?: number;
+    title: string;
+    company: string;
+    url?: string;
+    full_description: string;
+    created_at?: string;
+}
+
+export interface CVRecord {
+    id: number;
+    name: string;
+    created_at: string;
+    data: CV;
+}
+
+export interface JobPositionRecord {
+    id: number;
+    title: string;
+    company: string;
+    created_at: string;
+    data: JobPosition;
 }
 
 export const emptyCV: CV = {
+    name: "Untitled CV",
     personal_info: {
         name: "",
         email: "",

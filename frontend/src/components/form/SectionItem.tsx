@@ -1,94 +1,180 @@
-import { Trash2 } from "lucide-react"
-import { Input } from "../ui/Input"
+import { Trash2, GripVertical, Building2, MapPin, Link as LinkIcon, Calendar, Plus } from "lucide-react"
 import { Button } from "../ui/Button"
-import { DatePicker } from "../ui/DatePicker"
 import type { Experience } from "../../types/cv"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import { cn } from "../../lib/utils"
+import { useCvStore } from "../../store/useCvStore"
 
 interface SectionItemProps {
-    experience: Experience
-    onUpdate: (field: keyof Experience, value: any) => void
-    onRemove: () => void
+    item: Experience
+    sectionIndex: number
+    itemIndex: number
 }
 
-export function SectionItem({ experience, onUpdate, onRemove }: SectionItemProps) {
+export function SectionItem({ item, sectionIndex, itemIndex }: SectionItemProps) {
+    const { updateExperience, removeExperience } = useCvStore()
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: item.id || item.name })
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    }
     return (
-        <div className="space-y-4 pt-4 first:pt-0 border-t first:border-0 border-neutral-100 dark:border-neutral-800">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground tracking-wider">
-                        Role / Position <span className="text-destructive">*</span>
-                    </label>
-                    <Input
-                        value={experience.name}
-                        onChange={(e) => onUpdate('name', e.target.value)}
-                        placeholder="Software Engineer"
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground tracking-wider">
-                        Institution / Company <span className="text-destructive">*</span>
-                    </label>
-                    <Input
-                        value={experience.institution ?? ""}
-                        onChange={(e) => onUpdate('institution', e.target.value)}
-                        placeholder="Tech Corp"
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground tracking-wider">Location</label>
-                    <Input
-                        value={experience.location ?? ""}
-                        onChange={(e) => onUpdate('location', e.target.value)}
-                        placeholder="Remote / City, State"
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground tracking-wider">URL</label>
-                    <Input
-                        value={experience.url ?? ""}
-                        onChange={(e) => onUpdate('url', e.target.value)}
-                        placeholder="https://example.com"
-                    />
-                </div>
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={cn(
+                "group/item p-6 bg-card border border-border/50 rounded-2xl relative transition-all",
+                isDragging && "opacity-50 scale-95 shadow-2xl z-50 ring-1 ring-primary/30"
+            )}
+        >
+            <div className="absolute -left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-1 bg-white dark:bg-neutral-800 border border-border shadow-sm rounded-lg" {...attributes} {...listeners}>
+                <GripVertical className="w-4 h-4 text-muted-foreground" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground tracking-wider">Start Date</label>
-                    <DatePicker
-                        value={experience.interval?.start_date ?? null}
-                        onChange={(date) => onUpdate('interval', {
-                            ...(experience.interval ?? { start_date: null, end_date: null }),
-                            start_date: date
-                        })}
-                    />
-                </div>
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground tracking-wider">End Date (Leave empty for Present)</label>
-                    <DatePicker
-                        value={experience.interval?.end_date ?? null}
-                        onChange={(date) => onUpdate('interval', {
-                            ...(experience.interval ?? { start_date: null, end_date: null }),
-                            end_date: date
-                        })}
-                    />
-                </div>
-            </div>
-
-            <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground tracking-wider">Description (Bullet Points)</label>
-                <textarea
-                    value={experience.description.join('\n')}
-                    onChange={(e) => onUpdate('description', e.target.value.split('\n'))}
-                    className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    placeholder="• Developed new features...
-• Optimized performance..."
+            <div className="flex items-start justify-between gap-4 mb-6">
+                <input
+                    type="text"
+                    placeholder="Role / Degree / Project Title"
+                    className="flex-1 bg-transparent border-none focus:ring-0 text-lg font-bold text-foreground p-0 placeholder:text-muted-foreground/30"
+                    value={item.name}
+                    onChange={(e) => updateExperience(sectionIndex, itemIndex, { name: e.target.value })}
                 />
+                <Button variant="ghost" size="icon" onClick={() => removeExperience(sectionIndex, itemIndex)} className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover/item:opacity-100 transition-opacity">
+                    <Trash2 className="w-4 h-4" />
+                </Button>
             </div>
 
-            <div className="flex justify-end">
-                <Button variant="ghost" size="sm" onClick={onRemove} className="text-destructive h-7 px-2">
-                    <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove Entry
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <Building2 className="w-3 h-3" /> Company / Institution
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="e.g. Google, Stanford..."
+                            className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                            value={item.institution || ""}
+                            onChange={(e) => updateExperience(sectionIndex, itemIndex, { institution: e.target.value })}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <MapPin className="w-3 h-3" /> Location
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="e.g. San Francisco, CA"
+                            className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                            value={item.location || ""}
+                            onChange={(e) => updateExperience(sectionIndex, itemIndex, { location: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <LinkIcon className="w-3 h-3" /> Website / URL
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="https://..."
+                            className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                            value={item.url || ""}
+                            onChange={(e) => updateExperience(sectionIndex, itemIndex, { url: e.target.value })}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <Calendar className="w-3 h-3" /> Time Interval
+                        </label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                placeholder="MM/YYYY"
+                                className="w-full bg-muted/50 border border-border/50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-center"
+                                value={item.interval?.start_date ? `${item.interval.start_date.month}/${item.interval.start_date.year}` : ""}
+                                onChange={(e) => {
+                                    const [m, y] = e.target.value.split("/")
+                                    updateExperience(sectionIndex, itemIndex, {
+                                        interval: {
+                                            ...item.interval!,
+                                            start_date: { month: parseInt(m), year: parseInt(y) }
+                                        }
+                                    })
+                                }}
+                            />
+                            <span className="text-muted-foreground text-xs uppercase font-bold">to</span>
+                            <input
+                                type="text"
+                                placeholder="MM/YYYY or Present"
+                                className="w-full bg-muted/50 border border-border/50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-center"
+                                value={item.interval?.end_date ? `${item.interval.end_date.month}/${item.interval.end_date.year}` : ""}
+                                onChange={(e) => {
+                                    const [m, y] = e.target.value.split("/")
+                                    updateExperience(sectionIndex, itemIndex, {
+                                        interval: {
+                                            ...item.interval!,
+                                            end_date: { month: parseInt(m), year: parseInt(y) }
+                                        }
+                                    })
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-3">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                    Description & Key Accomplishments
+                </label>
+                {(item.description || []).map((desc, di) => (
+                    <div key={di} className="relative group/desc">
+                        <div className="absolute left-3 top-[18px] w-1.5 h-1.5 rounded-full bg-primary/30" />
+                        <textarea
+                            placeholder="Briefly describe your responsibilities or achievements..."
+                            className="w-full bg-muted/20 border border-border/30 rounded-xl pl-8 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium min-h-[60px] resize-none overflow-hidden"
+                            value={desc}
+                            onChange={(e) => {
+                                const newDesc = [...item.description]
+                                newDesc[di] = e.target.value
+                                updateExperience(sectionIndex, itemIndex, { description: newDesc })
+                            }}
+                        />
+                        <button
+                            onClick={() => {
+                                const newDesc = item.description.filter((_, i) => i !== di)
+                                updateExperience(sectionIndex, itemIndex, { description: newDesc })
+                            }}
+                            className="absolute right-3 top-3 p-1 rounded-md text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover/desc:opacity-100 transition-all"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                ))}
+
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full h-10 border border-dashed border-border/50 hover:border-primary hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all font-bold text-[10px] uppercase tracking-widest"
+                    onClick={() => {
+                        const newDesc = [...(item.description || []), ""]
+                        updateExperience(sectionIndex, itemIndex, { description: newDesc })
+                    }}
+                >
+                    <Plus className="w-3 h-3 mr-2" /> Add Achievement
                 </Button>
             </div>
         </div>

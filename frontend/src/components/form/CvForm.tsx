@@ -4,16 +4,25 @@ import { PersonalInfoForm } from "./PersonalInfoForm"
 import { SocialNetworksForm } from "./SocialNetworksForm"
 import { SkillsForm } from "./SkillsForm"
 import { CvSectionsList } from "./CvSectionsList"
-import { Button } from "../ui/Button"
-import { Plus, User, ListTree, Award } from "lucide-react"
+import { Plus, User, ListTree, Award, Briefcase, GraduationCap, Rocket } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "../../lib/utils"
+
+const SECTIONS = [
+    { id: "experience", label: "Work Experience", icon: Briefcase },
+    { id: "education", label: "Education", icon: GraduationCap },
+    { id: "projects", label: "Key Projects", icon: Rocket },
+]
 
 type Tab = "personal" | "sections" | "skills"
 
 export function CvForm() {
-    const { addSection } = useCvStore()
+    const { cv, addSection } = useCvStore()
     const [activeTab, setActiveTab] = React.useState<Tab>("personal")
+
+    const handleAddSection = (title: string) => {
+        addSection(title)
+    }
 
     const tabs = [
         { id: "personal", label: "PERSONAL", icon: User },
@@ -31,16 +40,33 @@ export function CvForm() {
             )
             case "sections": return (
                 <div className="space-y-6">
-                    <CvSectionsList />
-                    <div className="flex justify-center">
-                        <Button
-                            variant="outline"
-                            className="border-dashed border-2 border-muted-foreground/20 bg-muted/5 hover:bg-muted/20 hover:border-muted-foreground/40 transition-all px-8"
-                            onClick={() => addSection("")}
-                        >
-                            <Plus className="w-4 h-4 mr-2" /> Add New Section
-                        </Button>
+                    <div className="flex items-center gap-3 mb-8 px-2 overflow-x-auto pb-4 scrollbar-hide">
+                        {SECTIONS.map((s) => (
+                            <button
+                                key={s.id}
+                                onClick={() => handleAddSection(s.label)}
+                                className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl bg-card border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                            >
+                                <s.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                <span className="text-xs font-bold whitespace-nowrap">{s.label}</span>
+                                <Plus className="w-3 h-3 text-muted-foreground/50 group-hover:text-primary transition-colors" />
+                            </button>
+                        ))}
                     </div>
+
+                    {cv.sections.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center bg-muted/20 rounded-3xl border border-dashed border-border gap-4">
+                            <div className="p-4 bg-muted/40 rounded-full">
+                                <Plus className="w-8 h-8 text-muted-foreground/40" />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="font-bold">Add your first section</p>
+                                <p className="text-sm text-muted-foreground max-w-xs">Choose a category above to start building your resume layout.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <CvSectionsList />
+                    )}
                 </div>
             )
             case "skills": return <SkillsForm />

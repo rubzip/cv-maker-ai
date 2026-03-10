@@ -1,4 +1,4 @@
-import type { CV } from "../types/cv";
+import type { CV, CVRecord, JobPosition, JobPositionRecord } from "../types/cv";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -66,7 +66,7 @@ export async function parseYaml(yamlContent: string): Promise<CV> {
 
 // --- CV Repository Endpoints ---
 
-export async function saveCv(cv: CV): Promise<any> {
+export async function saveCv(cv: CV): Promise<CVRecord> {
     const response = await fetch(`${API_URL}/cv/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,19 +76,19 @@ export async function saveCv(cv: CV): Promise<any> {
     return await response.json();
 }
 
-export async function listCvs(): Promise<any[]> {
+export async function listCvs(): Promise<CVRecord[]> {
     const response = await fetch(`${API_URL}/cv/`);
     if (!response.ok) throw new Error("Failed to list CVs");
     return await response.json();
 }
 
-export async function getCv(id: number): Promise<any> {
+export async function getCv(id: number): Promise<CVRecord> {
     const response = await fetch(`${API_URL}/cv/${id}`);
     if (!response.ok) throw new Error("Failed to get CV");
     return await response.json();
 }
 
-export async function updateCv(id: number, cv: CV): Promise<any> {
+export async function updateCv(id: number, cv: CV): Promise<CVRecord> {
     const response = await fetch(`${API_URL}/cv/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ export async function deleteCv(id: number): Promise<void> {
 
 // --- Job Repository Endpoints ---
 
-export async function saveJob(job: any): Promise<any> {
+export async function saveJob(job: JobPosition): Promise<JobPositionRecord> {
     const response = await fetch(`${API_URL}/job/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,19 +117,19 @@ export async function saveJob(job: any): Promise<any> {
     return await response.json();
 }
 
-export async function listJobs(): Promise<any[]> {
+export async function listJobs(): Promise<JobPositionRecord[]> {
     const response = await fetch(`${API_URL}/job/`);
     if (!response.ok) throw new Error("Failed to list Jobs");
     return await response.json();
 }
 
-export async function getJob(id: number): Promise<any> {
+export async function getJob(id: number): Promise<JobPositionRecord> {
     const response = await fetch(`${API_URL}/job/${id}`);
     if (!response.ok) throw new Error("Failed to get Job");
     return await response.json();
 }
 
-export async function updateJob(id: number, job: any): Promise<any> {
+export async function updateJob(id: number, job: JobPosition): Promise<JobPositionRecord> {
     const response = await fetch(`${API_URL}/job/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

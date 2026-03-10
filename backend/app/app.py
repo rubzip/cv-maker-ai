@@ -2,22 +2,12 @@ from fastapi import FastAPI, Response, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.render import render_cv, tex_to_pdf
 from app.models.schemas import CV, JobPosition
-from app.database.models import CVTable, JobPositionTable
-from app.database.session import init_db, SessionDep
-from app.database import crud
-from contextlib import asynccontextmanager
+from app.storage import cv_storage, job_storage
 import yaml
 from typing import List
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Initialize database on startup
-    init_db()
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,72 +19,72 @@ app.add_middleware(
 
 @app.get("/")
 async def health_check():
-    return {"status": "ok", "message": "CV Maker AI API is running"}
+    return {"status": "ok", "message": "CV Maker AI API is running with YAML storage"}
 
 # --- CV Repository Endpoints ---
 
-@app.post("/cv/", response_model=CVTable)
-async def create_cv(cv: CV, session: SessionDep):
+@app.post("/cv/")
+async def create_cv(cv: CV):
     try:
-        return crud.create_cv(session, cv)
+        return cv_storage.save(cv)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/cv/", response_model=List[CVTable])
-async def list_cvs(session: SessionDep, skip: int = 0, limit: int = 100):
-    return crud.get_cvs(session, skip, limit)
+@app.get("/cv/", response_model=List[dict])
+async def list_cvs(skip: int = 0, limit: int = 100):
+    return cv_storage.list(CV, skip, limit)
 
-@app.get("/cv/{cv_id}", response_model=CVTable)
-async def get_cv(cv_id: int, session: SessionDep):
-    db_cv = crud.get_cv(session, cv_id)
-    if db_cv is None:
+@app.get("/cv/{cv_id}")
+async def get_cv(cv_id: int):
+    record = cv_storage.get(cv_id, CV)
+    if record is None:
         raise HTTPException(status_code=404, detail="CV not found")
-    return db_cv
+    return record
 
-@app.put("/cv/{cv_id}", response_model=CVTable)
-async def update_cv(cv_id: int, cv: CV, session: SessionDep):
-    db_cv = crud.update_cv(session, cv_id, cv)
-    if db_cv is None:
+@app.put("/cv/{cv_id}")
+async def update_cv(cv_id: int, cv: CV):
+    record = cv_storage.get(cv_id, CV)
+    if record is None:
         raise HTTPException(status_code=404, detail="CV not found")
-    return db_cv
+    return cv_storage.save(cv, item_id=cv_id, metadata={"created_at": record.get("created_at")})
 
 @app.delete("/cv/{cv_id}")
-async def delete_cv(cv_id: int, session: SessionDep):
-    success = crud.delete_cv(session, cv_id)
+async def delete_cv(cv_id: int):
+    success = cv_storage.delete(cv_id)
     if not success:
         raise HTTPException(status_code=404, detail="CV not found")
     return {"status": "success", "message": "CV deleted"}
 
 # --- Job Position Repository Endpoints ---
 
-@app.post("/job/", response_model=JobPositionTable)
-async def create_job_position(job: JobPosition, session: SessionDep):
+@app.post("/job/")
+async def create_job_position(job: JobPosition):
     try:
-        return crud.create_job_position(session, job)
+        return job_storage.save(job)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/job/", response_model=List[JobPositionTable])
-async def list_job_positions(session: SessionDep, skip: int = 0, limit: int = 100):
-    return crud.get_job_positions(session, skip, limit)
+@app.get("/job/", response_model=List[dict])
+async def list_job_positions(skip: int = 0, limit: int = 100):
+    return job_storage.list(JobPosition, skip, limit)
 
-@app.get("/job/{job_id}", response_model=JobPositionTable)
-async def get_job_position(job_id: int, session: SessionDep):
-    db_job = crud.get_job_position(session, job_id)
-    if db_job is None:
+@app.get("/job/{job_id}")
+async def get_job_position(job_id: int):
+    record = job_storage.get(job_id, JobPosition)
+    if record is None:
         raise HTTPException(status_code=404, detail="Job Position not found")
-    return db_job
+    return record
 
-@app.put("/job/{job_id}", response_model=JobPositionTable)
-async def update_job_position(job_id: int, job: JobPosition, session: SessionDep):
-    db_job = crud.update_job_position(session, job_id, job)
-    if db_job is None:
+@app.put("/job/{job_id}")
+async def update_job_position(job_id: int, job: JobPosition):
+    record = job_storage.get(job_id, JobPosition)
+    if record is None:
         raise HTTPException(status_code=404, detail="Job Position not found")
-    return db_job
+    return job_storage.save(job, item_id=job_id, metadata={"created_at": record.get("created_at")})
 
 @app.delete("/job/{job_id}")
-async def delete_job_position(job_id: int, session: SessionDep):
-    success = crud.delete_job_position(session, job_id)
+async def delete_job_position(job_id: int):
+    success = job_storage.delete(job_id)
     if not success:
         raise HTTPException(status_code=404, detail="Job Position not found")
     return {"status": "success", "message": "Job Position deleted"}

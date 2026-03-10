@@ -1,8 +1,7 @@
 import { useCvStore } from "../../store/useCvStore"
-import { Input } from "../ui/Input"
 import { FormCard } from "./FormCard"
 import { Button } from "../ui/Button"
-import { Trash2, Plus, Github, Linkedin, Twitter, Globe, Link } from "lucide-react"
+import { Trash2, Plus, Globe } from "lucide-react"
 
 export function SocialNetworksForm() {
     const {
@@ -11,61 +10,56 @@ export function SocialNetworksForm() {
         updateSocialNetwork,
         removeSocialNetwork
     } = useCvStore()
-    const { personal_info } = cv
-
-    const getNetworkIcon = (network: string) => {
-        const n = network.toLowerCase()
-        if (n.includes("github")) return <Github className="w-3.5 h-3.5" />
-        if (n.includes("linkedin")) return <Linkedin className="w-3.5 h-3.5" />
-        if (n.includes("twitter") || n.includes(" x ")) return <Twitter className="w-3.5 h-3.5" />
-        if (n.includes("portfolio") || n.includes("website") || n.includes("blog")) return <Globe className="w-3.5 h-3.5" />
-        return <Link className="w-3.5 h-3.5" />
-    }
 
     return (
-        <FormCard title="Social Networks">
-            <div className="space-y-6">
-                {personal_info.social_networks.map((sn, index) => (
-                    <div key={index} className="space-y-4 pt-4 first:pt-0 border-t first:border-0 border-neutral-100 dark:border-neutral-800 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-                                    <span className="text-neutral-400">{getNetworkIcon(sn.network)}</span>
-                                    Platform
-                                </label>
-                                <Input
-                                    value={sn.network}
-                                    onChange={(e) => updateSocialNetwork(index, { network: e.target.value })}
-                                    placeholder="e.g. LinkedIn"
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-medium text-neutral-400 dark:text-neutral-500 uppercase tracking-wider flex items-center gap-2">
-                                    <Link className="w-3.5 h-3.5 text-neutral-400" />
-                                    Username or URL
-                                </label>
-                                <Input
-                                    value={sn.username}
-                                    onChange={(e) => updateSocialNetwork(index, { username: e.target.value })}
-                                    placeholder="e.g. johndoe-dev"
-                                />
-                            </div>
+        <FormCard
+            title="Social Networks"
+            icon={Globe}
+            description="Link your LinkedIn, GitHub, or Twitter profiles."
+        >
+            <div className="space-y-4">
+                {cv.personal_info.social_networks.map((network, index) => (
+                    <div key={index} className="flex gap-3 group">
+                        <div className="grid grid-cols-2 gap-3 flex-1">
+                            <input
+                                type="text"
+                                placeholder="Network (e.g. LinkedIn)"
+                                className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                value={network.network}
+                                onChange={(e) => updateSocialNetwork(index, { network: e.target.value })}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Username / URL"
+                                className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                value={network.username}
+                                onChange={(e) => updateSocialNetwork(index, { username: e.target.value })}
+                            />
                         </div>
-                        <div className="flex justify-end">
-                            <Button variant="ghost" size="sm" onClick={() => removeSocialNetwork(index)} className="text-destructive h-7 px-2">
-                                <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove Profile
-                            </Button>
-                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeSocialNetwork(index)}
+                            className="h-10 w-10 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
                     </div>
                 ))}
 
+                {cv.personal_info.social_networks.length === 0 && (
+                    <div className="text-center py-6 bg-muted/20 rounded-2xl border border-dashed border-border">
+                        <p className="text-xs text-muted-foreground">No social networks added yet.</p>
+                    </div>
+                )}
+
                 <Button
                     variant="outline"
-                    size="sm"
-                    className="w-full border-dashed border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/10 transition-all font-medium"
+                    className="w-full h-10 border-dashed hover:border-primary hover:bg-primary/5 hover:text-primary transition-all font-bold group"
                     onClick={addSocialNetwork}
                 >
-                    <Plus className="w-4 h-4 mr-2" /> Add Network
+                    <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
+                    Add Social Network
                 </Button>
             </div>
         </FormCard>

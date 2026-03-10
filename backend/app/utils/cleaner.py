@@ -2,7 +2,7 @@ import re
 import unicodedata
 
 def clean_text(text: str) -> str:
-    if not isinstance(text, str) or len(str) == 0:
+    if not isinstance(text, str) or len(text) == 0:
         return ""
 
     # 1. Unicode Normalization

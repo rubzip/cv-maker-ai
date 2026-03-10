@@ -1,50 +1,43 @@
 services:
-  backend:
+  cv-backend:
     build:
       context: ./backend
+    container_name: cv-backend
+    environment:
+      - DEBUG=${DEBUG:-1}
+      - DATA_DIR=/app/data
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     volumes:
       - ./backend:/app
-    environment:
-      - DEBUG=1
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/cv_maker
-    depends_on:
-      db:
-        condition: service_healthy
-    # Restart policy
-    restart: always
-
-  db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=cv_maker
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - ./data:/app/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d cv_maker" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
       interval: 10s
       timeout: 5s
-      retries: 5
-    restart: always
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - cv-network
 
-  frontend:
+  cv-frontend:
     build:
       context: ./frontend
+    container_name: cv-frontend
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Don't overwrite node_modules with host version
-    environment:
-      - VITE_API_URL=http://localhost:8000
+      - /app/node_modules
     depends_on:
-      - backend
-    restart: always
+      cv-backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cv-network
 
-volumes:
-  postgres_data:
+networks:
+  cv-network:
+    driver: bridge

@@ -115,6 +115,7 @@ def test_complex_cv_structure(complex_cv):
 
 def test_cv_with_empty_optional_fields():
     pi = PersonalInfo(name="Minimalist", email="min@example.com")
-    cv = CV(personal_info=pi, sections=[], skills=None)
+    cv = CV(name="Minimalist Resume", personal_info=pi, sections=[], skills=None)
     assert cv.skills is None
     assert cv.sections == []
+    assert cv.name == "Minimalist Resume"

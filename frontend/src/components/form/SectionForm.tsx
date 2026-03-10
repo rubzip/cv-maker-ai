@@ -10,7 +10,7 @@ interface SectionFormProps {
 }
 
 export function SectionForm({ index }: SectionFormProps) {
-    const { cv, updateSection, removeSection, addExperience, updateExperience, removeExperience } = useCvStore()
+    const { cv, updateSection, removeSection, addExperience } = useCvStore()
     const section = cv.sections[index]
 
     return (
@@ -23,10 +23,10 @@ export function SectionForm({ index }: SectionFormProps) {
             <div className="space-y-6">
                 {section.content.map((exp: Experience, expIndex: number) => (
                     <SectionItem
-                        key={expIndex}
-                        experience={exp}
-                        onUpdate={(field, value) => updateExperience(index, expIndex, { [field]: value })}
-                        onRemove={() => removeExperience(index, expIndex)}
+                        key={exp.id || expIndex}
+                        item={exp}
+                        sectionIndex={index}
+                        itemIndex={expIndex}
                     />
                 ))}
 

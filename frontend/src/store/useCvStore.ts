@@ -1,11 +1,15 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { emptyCV } from "../types/cv";
-import type { CV, Experience, Skills } from "../types/cv";
+import type { CVRecord, CV, PersonalInfo, Experience, Skills } from "../types/cv";
+import { listCvs, saveCv, updateCv } from "../lib/api";
 
 interface CvState {
     cv: CV;
-    setPersonalInfo: (info: Partial<CV["personal_info"]>) => void;
+    cvId: number | null;
+    cvs: CVRecord[];
+    isLoading: boolean;
+    setPersonalInfo: (info: Partial<PersonalInfo>) => void;
     addSection: (title: string) => void;
     removeSection: (index: number) => void;
     updateSection: (index: number, title: string) => void;
@@ -23,11 +27,18 @@ interface CvState {
     removeSocialNetwork: (index: number) => void;
     resetCv: () => void;
     setCv: (cv: CV) => void;
+    setCvName: (name: string) => void;
+    setCvId: (id: number | null) => void;
+    fetchCvs: () => Promise<void>;
+    syncToDb: () => Promise<void>;
 }
 
 export const useCvStore = create<CvState>()(
-    immer((set) => ({
+    immer((set, get) => ({
         cv: emptyCV,
+        cvId: null,
+        cvs: [],
+        isLoading: false,
 
         setPersonalInfo: (info) =>
             set((state) => {
@@ -36,7 +47,7 @@ export const useCvStore = create<CvState>()(
 
         addSection: (title) =>
             set((state) => {
-                state.cv.sections.push({ title, content: [] });
+                state.cv.sections.push({ id: crypto.randomUUID(), title, content: [] });
             }),
 
         removeSection: (index) =>
@@ -58,6 +69,7 @@ export const useCvStore = create<CvState>()(
         addExperience: (sectionIndex) =>
             set((state) => {
                 state.cv.sections[sectionIndex].content.push({
+                    id: crypto.randomUUID(),
                     name: "",
                     institution: null,
                     location: null,
@@ -83,7 +95,7 @@ export const useCvStore = create<CvState>()(
         addSkillGroup: () =>
             set((state) => {
                 if (!state.cv.skills) state.cv.skills = [];
-                state.cv.skills.push({ skill_group: "", skills: [] });
+                state.cv.skills.push({ id: crypto.randomUUID(), skill_group: "", skills: [] });
             }),
 
         updateSkillGroup: (index, skillGroup) =>
@@ -133,11 +145,50 @@ export const useCvStore = create<CvState>()(
         resetCv: () =>
             set((state) => {
                 state.cv = emptyCV;
+                state.cvId = null;
             }),
 
         setCv: (cv) =>
             set((state) => {
                 state.cv = cv;
             }),
+
+        setCvName: (name) =>
+            set((state) => {
+                state.cv.name = name;
+            }),
+
+        setCvId: (id) =>
+            set((state) => {
+                state.cvId = id;
+            }),
+
+        fetchCvs: async () => {
+            set((state) => { state.isLoading = true; });
+            try {
+                const cvs = await listCvs();
+                set((state) => { state.cvs = cvs; });
+            } finally {
+                set((state) => { state.isLoading = false; });
+            }
+        },
+
+        syncToDb: async () => {
+            const { cv, cvId } = get();
+            set((state) => { state.isLoading = true; });
+            try {
+                if (cvId) {
+                    await updateCv(cvId, cv);
+                } else {
+                    const saved = await saveCv(cv);
+                    set((state) => { state.cvId = saved.id; });
+                }
+                // Refresh list after sync
+                const cvs = await listCvs();
+                set((state) => { state.cvs = cvs; });
+            } finally {
+                set((state) => { state.isLoading = false; });
+            }
+        },
     }))
 );

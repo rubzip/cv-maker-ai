@@ -14,6 +14,7 @@ from app.models import (
 @pytest.fixture
 def simple_cv() -> CV:
     return CV(
+        name="Simple Resume",
         personal_info=PersonalInfo(name="John Doe", email="john.doe@example.com"),
         sections=[
             Section(
@@ -30,6 +31,7 @@ def simple_cv() -> CV:
 @pytest.fixture
 def complex_cv() -> CV:
     return CV(
+        name="Complex Professional Resume",
         personal_info=PersonalInfo(
             name="John Doe 👨‍💻",
             email="john.doe.valencia@españa.es",

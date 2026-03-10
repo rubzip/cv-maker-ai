@@ -3,6 +3,4 @@ pydantic
 PyYAML
 fastapi[standard]
 jinja2
-sqlmodel
-psycopg2-binary
 pydantic-settings

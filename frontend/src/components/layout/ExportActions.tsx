@@ -1,13 +1,22 @@
 import { useState, useRef } from "react"
-import { Download, FileCode, Loader2, FileJson, Upload } from "lucide-react"
+import { Download, FileCode, Loader2, FileJson, Upload, Cloud } from "lucide-react"
 import { Button } from "../ui/Button"
 import { useCvStore } from "../../store/useCvStore"
 import { generatePdf, generateTex, generateYaml, parseYaml, downloadBlob } from "../../lib/api"
 
 export function ExportActions() {
     const [actionType, setActionType] = useState<"pdf" | "latex" | "yaml" | "import" | null>(null)
-    const { cv, setCv } = useCvStore()
+    const { cv, setCv, syncToDb, isLoading } = useCvStore()
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleSync = async () => {
+        try {
+            await syncToDb()
+        } catch (error) {
+            console.error("Sync failed:", error)
+            alert("Failed to save to database")
+        }
+    }
 
     const handleExport = async (type: "pdf" | "latex" | "yaml") => {
         try {
@@ -149,6 +158,28 @@ export function ExportActions() {
                     <>
                         <Download className="w-4 h-4 mr-2" />
                         PDF
+                    </>
+                )}
+            </Button>
+
+            <div className="h-4 w-px bg-border mx-2" />
+
+            <Button
+                size="sm"
+                variant="default"
+                onClick={handleSync}
+                disabled={isLoading || actionType !== null}
+                className="bg-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white shadow-sm px-6 font-semibold tracking-tight rounded-md"
+            >
+                {isLoading ? (
+                    <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving...
+                    </>
+                ) : (
+                    <>
+                        <Cloud className="w-4 h-4 mr-2" />
+                        Save to DB
                     </>
                 )}
             </Button>

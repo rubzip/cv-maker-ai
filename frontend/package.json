@@ -15,7 +15,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.34.5",
+    "framer-motion": "^12.35.2",
     "immer": "^11.1.4",
     "lucide-react": "^0.576.0",
     "react": "^19.2.0",
