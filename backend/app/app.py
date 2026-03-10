@@ -5,6 +5,7 @@ from app.models.schemas import CV, JobPosition
 from app.storage import cv_storage, job_storage
 from app.core.config import settings
 from app.utils.llm import GroqProvider, MockProvider, cv_refinement, CVRefinementResponse
+from app.utils.cleaner import clean_text
 import yaml
 from typing import List
 
@@ -62,6 +63,10 @@ async def delete_cv(cv_id: int):
 @app.post("/job/")
 async def create_job_position(job: JobPosition):
     try:
+        # Clean text fields before saving
+        job.title = clean_text(job.title)
+        job.company = clean_text(job.company)
+        job.full_description = clean_text(job.full_description)
         return job_storage.save(job)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -82,6 +87,12 @@ async def update_job_position(job_id: int, job: JobPosition):
     record = job_storage.get(job_id, JobPosition)
     if record is None:
         raise HTTPException(status_code=404, detail="Job Position not found")
+    
+    # Clean text fields before saving
+    job.title = clean_text(job.title)
+    job.company = clean_text(job.company)
+    job.full_description = clean_text(job.full_description)
+    
     return job_storage.save(job, item_id=job_id, metadata={"created_at": record.get("created_at")})
 
 @app.delete("/job/{job_id}")

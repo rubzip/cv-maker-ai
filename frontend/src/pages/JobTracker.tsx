@@ -13,6 +13,7 @@ import { listJobs, deleteJob, saveJob, getCv, refineCv, saveCv } from "../lib/ap
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
 import { CvSelectionModal } from "../components/ui/CvSelectionModal"
+import { JobDetailsModal } from "../components/ui/JobDetailsModal"
 import { useNavigate } from "react-router-dom"
 
 import type { JobPositionRecord, JobPosition } from "../types/cv"
@@ -25,7 +26,9 @@ export default function JobTracker() {
     const [searchQuery, setSearchQuery] = useState("")
     const [isAddingJob, setIsAddingJob] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false)
     const [selectedJob, setSelectedJob] = useState<JobPositionRecord | null>(null)
+    const [jobToView, setJobToView] = useState<JobPositionRecord | null>(null)
     const [newJob, setNewJob] = useState<JobPosition>({
         title: "",
         company: "",
@@ -81,6 +84,11 @@ export default function JobTracker() {
     const handleAdaptStart = (job: JobPositionRecord) => {
         setSelectedJob(job)
         setIsModalOpen(true)
+    }
+
+    const handleViewDetails = (job: JobPositionRecord) => {
+        setJobToView(job)
+        setIsDetailsOpen(true)
     }
 
     const handleSelectCv = async (cvId: number) => {
@@ -279,9 +287,18 @@ export default function JobTracker() {
                                 </Button>
                             </div>
 
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-2 mb-6 min-h-[2.5rem]">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-2 mb-4 min-h-[2.5rem]">
                                 {job.data.full_description}
                             </p>
+
+                            <Button
+                                variant="link"
+                                size="sm"
+                                className="p-0 h-auto text-primary font-bold text-xs uppercase tracking-tighter hover:no-underline mb-6"
+                                onClick={() => handleViewDetails(job)}
+                            >
+                                Read Full Description →
+                            </Button>
 
                             <div className="flex items-center justify-between pt-4 border-t border-neutral-100 dark:border-neutral-800/50">
                                 <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-500">
@@ -305,6 +322,12 @@ export default function JobTracker() {
                 isOptimizing={isOptimizing}
                 onClose={() => setIsModalOpen(false)}
                 onSelect={handleSelectCv}
+            />
+
+            <JobDetailsModal
+                job={jobToView}
+                isOpen={isDetailsOpen}
+                onClose={() => setIsDetailsOpen(false)}
             />
 
             {/* Hint Box */}
