@@ -11,6 +11,7 @@ services:
     volumes:
       - ./backend:/app
       - ./data:/app/data
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
       interval: 10s
@@ -23,6 +24,7 @@ services:
   cv-frontend:
     build:
       context: ./frontend
+      target: build
     container_name: cv-frontend
     environment:
       - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
@@ -31,6 +33,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 3000
     depends_on:
       cv-backend:
         condition: service_healthy

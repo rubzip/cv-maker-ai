@@ -29,9 +29,12 @@ Launch the entire professional stack (Frontend + Backend + Storage) with a singl
 git clone https://github.com/rubzip/cv-maker-ai.git
 cd cv-maker-ai
 cp .env.example .env
+# Customize .env file
 
 # 2. Launch with Docker (V2)
-sudo docker compose up --build -d
+sudo docker-compose down --remove-orphans
+sudo docker-compose rm -f -v
+sudo docker-compose up --build -d
 ```
 
 - **Frontend Builder:** [http://localhost:3000](http://localhost:3000)
