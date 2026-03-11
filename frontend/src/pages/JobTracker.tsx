@@ -102,11 +102,11 @@ export default function JobTracker() {
             // 2. Call refinement API
             const { cv: refinedCv, reasoning: _reasoning } = await refineCv(baseCvRecord.data, selectedJob.data)
 
-            // 3. Save as new CV
+            // 3. Save as new CV with reasoning
             const savedCv = await saveCv({
                 ...refinedCv,
                 name: `Optimized: ${selectedJob.data.company} - ${selectedJob.data.title}`
-            })
+            }, _reasoning)
 
             // 4. Redirect to editor
             navigate(`/editor/${savedCv.id}`)

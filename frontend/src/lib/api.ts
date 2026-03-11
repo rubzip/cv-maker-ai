@@ -66,8 +66,12 @@ export async function parseYaml(yamlContent: string): Promise<CV> {
 
 // --- CV Repository Endpoints ---
 
-export async function saveCv(cv: CV): Promise<CVRecord> {
-    const response = await fetch(`${API_URL}/cv/`, {
+export async function saveCv(cv: CV, optimizationReasoning?: string): Promise<CVRecord> {
+    const url = new URL(`${API_URL}/cv/`);
+    if (optimizationReasoning) {
+        url.searchParams.append("optimization_reasoning", optimizationReasoning);
+    }
+    const response = await fetch(url.toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cv),
@@ -88,8 +92,12 @@ export async function getCv(id: number): Promise<CVRecord> {
     return await response.json();
 }
 
-export async function updateCv(id: number, cv: CV): Promise<CVRecord> {
-    const response = await fetch(`${API_URL}/cv/${id}`, {
+export async function updateCv(id: number, cv: CV, optimizationReasoning?: string): Promise<CVRecord> {
+    const url = new URL(`${API_URL}/cv/${id}`);
+    if (optimizationReasoning) {
+        url.searchParams.append("optimization_reasoning", optimizationReasoning);
+    }
+    const response = await fetch(url.toString(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cv),

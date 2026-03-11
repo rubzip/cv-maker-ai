@@ -67,6 +67,7 @@ export interface CVRecord {
     id: number;
     name: string;
     created_at: string;
+    optimization_reasoning?: string;
     data: CV;
 }
 

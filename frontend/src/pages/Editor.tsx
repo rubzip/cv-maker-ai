@@ -11,13 +11,14 @@ import { getCv } from "../lib/api"
 import { CvForm } from "../components/form/CvForm"
 import { CvPreview } from "../components/preview/CvPreview"
 import { Button } from "../components/ui/Button"
+import { AiInsights } from "../components/editor/AiInsights"
 import { ExportActions } from "../components/layout/ExportActions"
 import { cn } from "../lib/utils"
 
 export default function Editor() {
     const { cvId } = useParams()
     const navigate = useNavigate()
-    const { cv, setCv, setCvName, setCvId, syncToDb, isLoading: isSyncing } = useCvStore()
+    const { cv, setCv, setCvName, setCvId, setOptimizationReasoning, optimizationReasoning, syncToDb, isLoading: isSyncing } = useCvStore()
     const [isLoading, setIsLoading] = useState(true)
     const [showPreview, setShowPreview] = useState(true)
 
@@ -29,6 +30,7 @@ export default function Editor() {
                     const loadedRecord = await getCv(parseInt(cvId))
                     setCv(loadedRecord.data)
                     setCvId(loadedRecord.id)
+                    setOptimizationReasoning(loadedRecord.optimization_reasoning || null)
                 } catch (err) {
                     console.error("Failed to load CV:", err)
                     alert("Failed to load resume")
@@ -120,6 +122,9 @@ export default function Editor() {
                                 Refine every detail of your profile.
                             </p>
                         </div>
+
+                        <AiInsights reasoning={optimizationReasoning || undefined} />
+
                         <CvForm />
                     </div>
                 </div>

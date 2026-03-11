@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.utils.llm import GroqProvider, MockProvider, cv_refinement, CVRefinementResponse
 from app.utils.cleaner import clean_text
 import yaml
-from typing import List
+from typing import List, Optional
 
 
 app = FastAPI()
@@ -27,9 +27,10 @@ async def health_check():
 # --- CV Repository Endpoints ---
 
 @app.post("/cv/")
-async def create_cv(cv: CV):
+async def create_cv(cv: CV, optimization_reasoning: Optional[str] = None):
     try:
-        return cv_storage.save(cv)
+        metadata = {"optimization_reasoning": optimization_reasoning} if optimization_reasoning else None
+        return cv_storage.save(cv, metadata=metadata)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -45,11 +46,18 @@ async def get_cv(cv_id: int):
     return record
 
 @app.put("/cv/{cv_id}")
-async def update_cv(cv_id: int, cv: CV):
+async def update_cv(cv_id: int, cv: CV, optimization_reasoning: Optional[str] = None):
     record = cv_storage.get(cv_id, CV)
     if record is None:
         raise HTTPException(status_code=404, detail="CV not found")
-    return cv_storage.save(cv, item_id=cv_id, metadata={"created_at": record.get("created_at")})
+    metadata = {"created_at": record.get("created_at")}
+    if optimization_reasoning:
+        metadata["optimization_reasoning"] = optimization_reasoning
+    elif "optimization_reasoning" in record:
+        # Preserve existing reasoning if not provided in the update
+        metadata["optimization_reasoning"] = record["optimization_reasoning"]
+        
+    return cv_storage.save(cv, item_id=cv_id, metadata=metadata)
 
 @app.delete("/cv/{cv_id}")
 async def delete_cv(cv_id: int):

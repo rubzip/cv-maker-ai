@@ -30,7 +30,8 @@ class FileStorage:
         record = {
             "id": item_id,
             "created_at": (metadata or {}).get("created_at") or datetime.now(timezone.utc).isoformat(),
-            "data": data.model_dump()
+            "data": data.model_dump(),
+            **(metadata or {})
         }
         
         # Add extra top-level fields for convenience (name, title, company)

@@ -1,0 +1,16 @@
+Transform the provided CV data into a world-class professional document tailored for the target Job Position.
+
+INPUT DATA:
+- TARGET JOB: {{ job_position }}
+- CANDIDATE CV: {{ cv }}
+
+INSTRUCTIONS:
+1. PROFESSIONAL SUMMARY: Rewrite the 'about' section as a compelling, human-centric narrative (3 sentences) that acts as an "elevator pitch" for the specific job.
+2. EXPERIENCE UPDATING: Rewrite experience descriptions into integrated, high-impact bullet points. Use STAR-K ONLY where it adds value and data permits; otherwise, focus on clear, results-oriented language. Integrate keywords naturally into the flow.
+3. SKILLS ARCHITECTURE: Dynamically group tech proficiencies into high-signal 'skill_group' categories based on the JD requirements.
+4. REASONING: Provide a 2-para summary:
+   - Para 1: The strategic reasoning behind the tailoring (Human-centric view).
+   - Para 2: ATS metrics (Injected keywords and "Match Score" [0-100]).
+
+OUTPUT SCHEMA:
+{{ schema }}

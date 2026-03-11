@@ -14,58 +14,41 @@ class CVRefinementResponse(BaseModel):
     reasoning: str = Field(..., description="Reasoning for the CV refinement")
 
 
-SYSTEM_TEMPLATE_CONTENT = """
-You are a Senior Talent Acquisition Architect and AI Systems Researcher specializing in 2026 tech recruitment. Your mission is to transform a candidate's professional history into a high-signal, structured CV object that perfectly aligns with a specific Job Description (JD).
+def load_prompt_templates():
+    """Load prompt templates from external files."""
+    try:
+        with open("app/static/prompts/cv_refinement_system.jinja2", "r") as f:
+            system_template = f.read()
+        with open("app/static/prompts/cv_refinement_user.jinja2", "r") as f:
+            user_template = f.read()
+        return PromptTemplate(
+            system_template=system_template,
+            user_template=user_template
+        )
+    except Exception as e:
+        logger.error(f"Error loading prompt templates: {str(e)}")
+        # Fallback to hardcoded ones if files are missing or errored
+        return PromptTemplate(
+            system_template="You are a professional CV editor. Tailor the CV to the job position.",
+            user_template="Tailor this CV: {{ cv }} to this job: {{ job_position }}. Return JSON with schema {{ schema }}"
+        )
 
-STRATEGIC DIRECTIVES:
-1. STAR-K METHODOLOGY: Every entry in the 'description' list must follow the STAR-K framework: Situation, Task, Action (specific tools/protocols), Result (quantified metrics), and Keywords.
-2. 2026 TECH SIGNALS: Prioritize and integrate experience with Agentic AI (orchestration, multi-agent workflows) and Model Context Protocol (MCP) servers where relevant to the JD.
-3. SDLC COMPRESSION: Highlight metrics related to Software Development Lifecycle acceleration—moving "time to value" from weeks to hours.
-4. SIGNAL DENSITY: Focus on "Task Horizon" (autonomous work duration) and "Onboarding Velocity" rather than generic responsibility lists.
-5. LINGUISTIC HUMANIZATION: Vary sentence length and structure (burstiness) within descriptions to bypass low-entropy AI detection filters while maintaining technical precision.
-6. SCHEMA RIGIDITY: You must output a valid JSON object that strictly adheres to the provided CV BaseModel. Ensure dates follow the (month, year) schema and intervals are logically validated.
-
-CONSTRAINTS:
-- ZERO HALLUCINATION: Only use facts from the candidate's history. If a metric is missing, use [X%] as a placeholder.
-- NO HIDDEN TACTICS: Do not use white-fonting or prompt injection hacks; these are auto-flagged by modern 2026 ATS platforms.
-"""
-
-USER_TEMPLATE_CONTENT = """
-Refine the provided CV data to maximize the semantic Match Rate for the target Job Position.
-
-INPUT DATA:
-- TARGET JOB: {{ job_position }}
-- CANDIDATE CV: {{ cv }}
-
-INSTRUCTIONS:
-1. Perform a semantic analysis of the JD to identify "High Priority" hard skills (e.g., Python, AWS, MCP, Agentic Workflows).
-2. Rewrite the 'about' section to be a 3-sentence narrative focused on solving the specific challenges mentioned in the JD.
-3. Map the candidate's work history to the 'sections' and 'Experience' models:
-   - Rewrite 'description' strings as high-impact STAR-K bullet points.
-   - Ensure 'name' (Role Title) is aligned with industry standards (e.g., adding parentheticals like "Software Engineer (AI/MCP Specialist)").
-4. Group technical proficiencies into the 'skills' model by 'skill_group' (e.g., "AI Orchestration", "Cloud Infrastructure").
-5. Generate an optimized internal Title and Keywords for document metadata to be included in the reasoning summary.
-
-OUTPUT:
-You MUST return a JSON object ONLY. The output must strictly follow this JSON Schema:
-{{ schema }}
-"""
-
-REFINEMENT_TEMPLATE = PromptTemplate(
-    system_template=SYSTEM_TEMPLATE_CONTENT,
-    user_template=USER_TEMPLATE_CONTENT
-)
+# Initialize template (can be re-loaded or cached)
+REFINEMENT_TEMPLATE = load_prompt_templates()
 
 
 async def cv_refinement(cv: CV, job_position: JobPosition, llm: BaseLLM) -> CVRefinementResponse:
     """
     Refine the CV to match the job position requirements using the provided LLM.
     """
+    # 0. Reload template to pick up changes in static files during development
+    ref_template = load_prompt_templates()
+    
     # 1. Get the expected schema for the LLM to follow
     schema_json = json.dumps(CVRefinementResponse.model_json_schema(), indent=2)
     
     # 2. Render messages with data and schema
-    messages = REFINEMENT_TEMPLATE.render(
+    messages = ref_template.render(
         cv=cv, 
         job_position=job_position,
         schema=schema_json
@@ -95,7 +78,9 @@ async def cv_refinement(cv: CV, job_position: JobPosition, llm: BaseLLM) -> CVRe
         else:
             data = json.loads(content)
             
-        return CVRefinementResponse.model_validate(data)
+        validated_response = CVRefinementResponse.model_validate(data)
+        
+        return validated_response
     except Exception as e:
         # Fallback if parsing fails
         logger.error(f"CV Refinement Parsing Error: {str(e)}")

@@ -8,6 +8,7 @@ interface CvState {
     cv: CV;
     cvId: number | null;
     cvs: CVRecord[];
+    optimizationReasoning: string | null;
     isLoading: boolean;
     setPersonalInfo: (info: Partial<PersonalInfo>) => void;
     addSection: (title: string) => void;
@@ -29,6 +30,7 @@ interface CvState {
     setCv: (cv: CV) => void;
     setCvName: (name: string) => void;
     setCvId: (id: number | null) => void;
+    setOptimizationReasoning: (reasoning: string | null) => void;
     fetchCvs: () => Promise<void>;
     duplicateCv: (id: number) => Promise<void>;
     syncToDb: () => Promise<void>;
@@ -39,6 +41,7 @@ export const useCvStore = create<CvState>()(
         cv: emptyCV,
         cvId: null,
         cvs: [],
+        optimizationReasoning: null,
         isLoading: false,
 
         setPersonalInfo: (info) =>
@@ -147,6 +150,7 @@ export const useCvStore = create<CvState>()(
             set((state) => {
                 state.cv = emptyCV;
                 state.cvId = null;
+                state.optimizationReasoning = null;
             }),
 
         setCv: (cv) =>
@@ -164,6 +168,11 @@ export const useCvStore = create<CvState>()(
                 state.cvId = id;
             }),
 
+        setOptimizationReasoning: (reasoning) =>
+            set((state) => {
+                state.optimizationReasoning = reasoning;
+            }),
+
         fetchCvs: async () => {
             set((state) => { state.isLoading = true; });
             try {
@@ -179,13 +188,14 @@ export const useCvStore = create<CvState>()(
             try {
                 const record = await getCv(id);
                 const originalCv = record.data;
+                const reasoning = record.optimization_reasoning;
 
                 const newCv: CV = {
                     ...originalCv,
                     name: `Copy of ${originalCv.name}`
                 };
 
-                await saveCv(newCv);
+                await saveCv(newCv, reasoning);
 
                 // Refresh list
                 const cvs = await listCvs();
@@ -196,13 +206,13 @@ export const useCvStore = create<CvState>()(
         },
 
         syncToDb: async () => {
-            const { cv, cvId } = get();
+            const { cv, cvId, optimizationReasoning } = get();
             set((state) => { state.isLoading = true; });
             try {
                 if (cvId) {
-                    await updateCv(cvId, cv);
+                    await updateCv(cvId, cv, optimizationReasoning || undefined);
                 } else {
-                    const saved = await saveCv(cv);
+                    const saved = await saveCv(cv, optimizationReasoning || undefined);
                     set((state) => { state.cvId = saved.id; });
                 }
                 // Refresh list after sync
