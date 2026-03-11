@@ -46,75 +46,82 @@ export function MainLayout() {
             {/* Sidebar */}
             <aside
                 className={cn(
-                    "flex flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 transition-all duration-300 ease-in-out z-50 shadow-sm",
+                    "flex flex-col border-r border-border bg-card transition-all duration-300 ease-in-out z-50",
                     isCollapsed ? "w-20" : "w-64"
                 )}
             >
                 {/* Logo Section */}
                 <div className="p-6 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary rounded flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shrink-0 shadow-sm">
                         <Sparkles className="w-5 h-5 text-primary-foreground" />
                     </div>
                     {!isCollapsed && (
-                        <span className="font-bold tracking-tight text-lg truncate">CV Maker AI</span>
+                        <span className="font-black tracking-tighter text-xl">Studio</span>
                     )}
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 px-3 space-y-1">
+                <nav className="flex-1 px-3 space-y-1.5 mt-4">
                     {navItems.map((item) => (
                         <Link
                             key={item.path}
                             to={item.path}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-md transition-all group overflow-hidden",
+                                "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group overflow-hidden",
                                 location.pathname === item.path
-                                    ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-sm"
-                                    : "text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-neutral-100"
+                                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/10"
+                                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                             )}
                         >
-                            <item.icon className="w-5 h-5 shrink-0" />
+                            <item.icon className={cn("w-5 h-5 shrink-0 transition-transform group-hover:scale-110", location.pathname === item.path ? "text-primary-foreground" : "text-muted-foreground")} />
                             {!isCollapsed && (
-                                <span className="font-medium text-sm truncate">{item.label}</span>
+                                <span className="font-bold text-sm truncate tracking-tight">{item.label}</span>
                             )}
                         </Link>
                     ))}
                 </nav>
 
                 {/* Footer Actions */}
-                <div className="p-3 border-t border-border space-y-1">
+                <div className="p-3 border-t border-border space-y-1 bg-secondary/30">
                     <button
                         onClick={toggleTheme}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-neutral-100 transition-all overflow-hidden"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground transition-all overflow-hidden"
                     >
                         {theme === "light" ? <Moon className="w-5 h-5 shrink-0" /> : <Sun className="w-5 h-5 shrink-0" />}
-                        {!isCollapsed && <span className="text-sm font-medium">Switch Theme</span>}
+                        {!isCollapsed && <span className="text-sm font-bold tracking-tight">Switch Theme</span>}
                     </button>
 
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-neutral-100 transition-all overflow-hidden"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground transition-all overflow-hidden"
                     >
                         <ChevronLeft className={cn("w-5 h-5 transition-transform shrink-0", isCollapsed && "rotate-180")} />
-                        {!isCollapsed && <span className="text-sm font-medium">Collapse</span>}
+                        {!isCollapsed && <span className="text-sm font-bold tracking-tight">Collapse</span>}
                     </button>
                 </div>
             </aside>
 
             {/* Main Content */}
             <main className="flex-1 relative overflow-hidden flex flex-col min-w-0">
-                <header className="h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm flex items-center justify-between px-8 shrink-0 z-40">
+                <header className="h-20 border-b border-border bg-background/80 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-40">
                     <div className="flex items-center gap-4">
-                        <h2 className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                            {navItems.find(n => n.path === location.pathname)?.label || "Studio"}
-                        </h2>
+                        <div className="flex flex-col">
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mb-1">
+                                {navItems.find(n => n.path === location.pathname)?.label || "Studio"}
+                            </h2>
+                            <p className="text-xl font-black tracking-tighter">
+                                {location.pathname === "/" ? "Overview" :
+                                    location.pathname === "/cvs" ? "Library" :
+                                        location.pathname === "/jobs" ? "Tracker" : "Editor"}
+                            </p>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <Button variant="outline" size="sm" className="h-9">
+                    <div className="flex items-center gap-3">
+                        <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl font-bold border-border/50 hover:bg-secondary">
                             <Plus className="w-4 h-4 mr-2" /> New Job
                         </Button>
                         <Link to="/editor/new">
-                            <Button size="sm" className="h-9">
+                            <Button size="sm" className="h-10 px-5 rounded-xl font-bold shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
                                 <Plus className="w-4 h-4 mr-2" /> New Resume
                             </Button>
                         </Link>

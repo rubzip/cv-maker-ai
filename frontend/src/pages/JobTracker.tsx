@@ -125,87 +125,87 @@ export default function JobTracker() {
     )
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 pb-12 transition-all">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black tracking-tight">Job Tracker</h1>
-                    <p className="text-muted-foreground text-sm">Manage tracked opportunities and create AI adaptations.</p>
+        <div className="max-w-6xl mx-auto space-y-10 pb-20 transition-all">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-1.5">
+                    <h1 className="text-3xl font-black tracking-tighter">Job Tracker</h1>
+                    <p className="text-muted-foreground text-sm font-medium">Coordinate your applications and generate AI-tailored iterations.</p>
                 </div>
                 {!isAddingJob && (
                     <Button
                         onClick={() => setIsAddingJob(true)}
-                        className="font-semibold shadow-sm bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
+                        className="font-bold shadow-xl shadow-primary/10 bg-primary text-primary-foreground h-11 px-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <Plus className="w-4 h-4 mr-2" /> Add Job Manually
+                        <Plus className="w-4 h-4 mr-2" /> Add Position
                     </Button>
                 )}
             </div>
 
             {/* Add Job Form */}
             {isAddingJob && (
-                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-6 shadow-sm md:shadow-md animate-in fade-in duration-200">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-md bg-neutral-100 dark:bg-neutral-800">
-                                <Plus className="w-4 h-4 text-neutral-900 dark:text-neutral-50" />
+                <div className="bg-card border border-border/50 rounded-3xl p-8 shadow-sm md:shadow-lg animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-secondary text-foreground border border-border/50">
+                                <Plus className="w-4 h-4" />
                             </div>
-                            <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">New Job Position</h2>
+                            <h2 className="text-xl font-black tracking-tighter">New Opportunity</h2>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => setIsAddingJob(false)} className="rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800">
-                            <X className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                        <Button variant="ghost" size="icon" onClick={() => setIsAddingJob(false)} className="rounded-xl hover:bg-secondary">
+                            <X className="w-5 h-5 text-muted-foreground" />
                         </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-medium uppercase tracking-wider text-neutral-500 px-0.5">Job Title</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-1">Job Title</label>
                             <Input
-                                placeholder="e.g. Senior Frontend Developer"
+                                placeholder="e.g. Lead Designer"
                                 value={newJob.title}
                                 onChange={(e) => setNewJob({ ...newJob, title: e.target.value })}
-                                className="bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 h-10 text-sm rounded-md focus:ring-neutral-400 focus:border-neutral-400"
+                                className="bg-secondary/50 border-border/50 h-12 text-base rounded-xl focus:ring-primary focus:border-primary font-medium"
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-medium uppercase tracking-wider text-neutral-500 px-0.5">Company</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-1">Company</label>
                             <Input
-                                placeholder="e.g. Google"
+                                placeholder="e.g. OpenAI"
                                 value={newJob.company}
                                 onChange={(e) => setNewJob({ ...newJob, company: e.target.value })}
-                                className="bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 h-10 text-sm rounded-md focus:ring-neutral-400 focus:border-neutral-400"
+                                className="bg-secondary/50 border-border/50 h-12 text-base rounded-xl focus:ring-primary focus:border-primary font-medium"
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-medium uppercase tracking-wider text-neutral-500 px-0.5">URL (Optional)</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-1">URL (Optional)</label>
                             <Input
-                                placeholder="https://linkedin.com/jobs/..."
+                                placeholder="https://..."
                                 value={newJob.url}
                                 onChange={(e) => setNewJob({ ...newJob, url: e.target.value })}
-                                className="bg-neutral-50 dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 h-10 text-sm rounded-md focus:ring-neutral-400 focus:border-neutral-400"
+                                className="bg-secondary/50 border-border/50 h-12 text-base rounded-xl focus:ring-primary focus:border-primary font-medium"
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-1.5 mb-8">
-                        <label className="text-[10px] font-medium uppercase tracking-wider text-neutral-500 px-0.5">Job Description</label>
+                    <div className="space-y-2 mb-10">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-1">Job Description</label>
                         <textarea
-                            placeholder="Paste the full job description here..."
+                            placeholder="Paste the full job details..."
                             value={newJob.full_description}
                             onChange={(e) => setNewJob({ ...newJob, full_description: e.target.value })}
-                            className="w-full h-40 p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-md resize-none text-sm focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 focus:outline-none transition-colors placeholder:text-neutral-400"
+                            className="w-full h-48 p-5 bg-secondary/50 border border-border/50 rounded-2xl resize-none text-base font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all placeholder:text-muted-foreground/40"
                         />
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                        <Button variant="ghost" onClick={() => setIsAddingJob(false)} className="font-medium rounded-md h-9 px-4">
-                            Cancel
+                    <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
+                        <Button variant="ghost" onClick={() => setIsAddingJob(false)} className="font-bold rounded-xl h-11 px-6 hover:bg-secondary">
+                            Discard
                         </Button>
                         <Button
                             onClick={handleSaveJob}
                             disabled={!newJob.title || !newJob.company || !newJob.full_description}
-                            className="bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 text-white font-medium px-6 h-9 rounded-md shadow-sm disabled:opacity-50 transition-colors"
+                            className="bg-primary text-primary-foreground font-bold px-8 h-11 rounded-xl shadow-lg shadow-primary/20 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
-                            Save Position
+                            Save Opportunity
                         </Button>
                     </div>
                 </div>
@@ -214,11 +214,11 @@ export default function JobTracker() {
             {/* Search */}
             {!isAddingJob && (
                 <div className="relative group">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-neutral-900 dark:group-focus-within:text-neutral-100 transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <input
                         type="text"
-                        placeholder="Search jobs by title or company..."
-                        className="w-full pl-11 pr-4 py-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-700 shadow-sm"
+                        placeholder="Search positions or companies..."
+                        className="w-full pl-12 pr-6 py-4 bg-card border border-border/50 rounded-2xl text-base font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/50 shadow-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -227,89 +227,85 @@ export default function JobTracker() {
 
             {/* List */}
             {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-48 bg-neutral-100 dark:bg-neutral-800 animate-pulse rounded-lg border border-neutral-200 dark:border-neutral-800"></div>
+                        <div key={i} className="h-56 bg-secondary/30 animate-pulse rounded-3xl border border-border/50"></div>
                     ))}
                 </div>
             ) : filteredJobs.length === 0 ? (
-                <div className="py-20 text-center bg-neutral-50 dark:bg-neutral-950/50 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800 flex flex-col items-center justify-center space-y-4">
-                    <div className="p-4 bg-neutral-100 dark:bg-neutral-800 rounded-md text-neutral-400">
-                        <Briefcase className="w-10 h-10" />
+                <div className="py-24 text-center bg-secondary/20 rounded-3xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center space-y-6">
+                    <div className="p-5 bg-card rounded-2xl border border-border/50 text-muted-foreground/30 shadow-sm">
+                        <Briefcase className="w-12 h-12" />
                     </div>
-                    <div className="space-y-1">
-                        <p className="font-semibold text-lg tracking-tight text-neutral-900 dark:text-neutral-100">No positions found</p>
-                        <p className="text-sm text-neutral-500 max-w-xs mx-auto">Add your first job manually or use our extension to auto-capture details.</p>
+                    <div className="space-y-2">
+                        <p className="font-black text-xl tracking-tighter">No Tracking Activity</p>
+                        <p className="text-sm text-muted-foreground max-w-sm mx-auto font-medium">Add a position manually or sync via our browser extension to start optimizing.</p>
                     </div>
                     <Button
                         variant="outline"
                         onClick={() => setIsAddingJob(true)}
-                        className="rounded-md font-medium border-neutral-200 dark:border-neutral-800 transition-colors"
+                        className="rounded-xl font-bold border-border/60 h-10 px-6 transition-all hover:bg-background"
                     >
-                        <Plus className="w-3.5 h-3.5 mr-2" /> Start now
+                        <Plus className="w-4 h-4 mr-2" /> Start Tracking
                     </Button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {filteredJobs.map((job) => (
                         <div
                             key={job.id}
-                            className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-6 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors duration-150"
+                            className="group relative bg-card border border-border/50 rounded-3xl p-7 hover:bg-secondary/40 transition-all duration-300 shadow-sm hover:shadow-md"
                         >
-                            <div className="flex items-start justify-between gap-4 mb-4">
-                                <div className="space-y-1 flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <h3 className="font-semibold text-lg tracking-tight text-neutral-900 dark:text-neutral-100">
+                            <div className="flex items-start justify-between gap-6 mb-6">
+                                <div className="space-y-1.5 flex-1 min-w-0">
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        <h3 className="font-black text-xl tracking-tighter truncate">
                                             {job.title}
                                         </h3>
-                                        <span className="text-neutral-300 dark:text-neutral-700 font-medium">/</span>
-                                        <span className="font-medium text-sm text-neutral-600 dark:text-neutral-400">{job.company}</span>
+                                        <div className="h-1.5 w-1.5 rounded-full bg-border/50" />
+                                        <span className="font-bold text-sm text-muted-foreground/60 tracking-tight">{job.company}</span>
                                     </div>
                                     {job.data.url && (
                                         <a
                                             href={job.data.url}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+                                            className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 hover:text-primary transition-colors"
                                         >
-                                            <LinkIcon className="w-3 h-3 mr-1" />
-                                            View Source
+                                            <LinkIcon className="w-3 h-3 mr-1.5" />
+                                            Source Details
                                         </a>
                                     )}
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 text-neutral-400 hover:text-red-600 hover:bg-neutral-100 dark:hover:bg-red-950/20 transition-all rounded-md shrink-0 focus:ring-red-500"
+                                    className="h-10 w-10 text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 transition-all rounded-xl shrink-0"
                                     onClick={() => job.id !== undefined && handleDelete(job.id)}
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </Button>
                             </div>
 
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-2 mb-4 min-h-[2.5rem]">
+                            <p className="text-sm text-muted-foreground font-medium leading-relaxed line-clamp-2 mb-6 min-h-[3rem]">
                                 {job.data.full_description}
                             </p>
 
-                            <Button
-                                variant="link"
-                                size="sm"
-                                className="p-0 h-auto text-primary font-bold text-xs uppercase tracking-tighter hover:no-underline mb-6"
-                                onClick={() => handleViewDetails(job)}
-                            >
-                                Read Full Description →
-                            </Button>
-
-                            <div className="flex items-center justify-between pt-4 border-t border-neutral-100 dark:border-neutral-800/50">
-                                <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-500">
-                                    Added {new Date(job.created_at).toLocaleDateString()}
-                                </span>
+                            <div className="flex items-center justify-between pt-6 border-t border-border/30">
                                 <Button
-                                    className="h-9 px-5 rounded-md font-semibold bg-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white shadow-sm transition-all focus:ring-2 focus:ring-neutral-400"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="p-0 h-auto text-primary font-black text-[10px] uppercase tracking-[0.25em] hover:bg-transparent hover:translate-x-1 transition-transform"
+                                    onClick={() => handleViewDetails(job)}
+                                >
+                                    Review Specs →
+                                </Button>
+                                <Button
+                                    className="h-10 px-6 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                     onClick={() => handleAdaptStart(job)}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 mr-2" />
-                                    Adapt Resume
+                                    Adapt
                                 </Button>
                             </div>
                         </div>
