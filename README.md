@@ -64,8 +64,6 @@ npm run dev
 ```
 
 
-
-
 - **Frontend Builder:** [http://localhost:3000](http://localhost:3000)
 - **API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
@@ -74,9 +72,8 @@ npm run dev
 ## 🛠️ Tech Stack
 
 - **Frontend:** [Vite](https://vitejs.dev/) + [React](https://reactjs.org/) + [Zustand](https://github.com/pmndrs/zustand)
-- **Aesthetics:** Tech Minimalist (Neutral Zinc / Premium Dark Mode Support)
 - **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python 3.12)
-- **Persistence:** YAML Flat-file storage
+- **Storage:** YAML Flat-file storage
 - **Engine:** LaTeX (Professional PDF Rendering)
 
 ---
